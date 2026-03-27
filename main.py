@@ -198,3 +198,22 @@ def startup():
     init_db()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/api/vorschlaege")
+def get_vorschlaege():
+    with get_db() as db:
+        rows = db.execute("SELECT grund, massnahmen FROM konsultationen").fetchall()
+    grund_counts = {}
+    mass_counts = {}
+    for row in rows:
+        for i, counts in enumerate([grund_counts, mass_counts]):
+            val = row[i]
+            if not val: continue
+            try: items = json.loads(val)
+            except: items = []
+            for item in items:
+                item = item.strip()
+                if item: counts[item] = counts.get(item, 0) + 1
+    gs = [k for k,_ in sorted(grund_counts.items(), key=lambda x:-x[1])]
+    ms = [k for k,_ in sorted(mass_counts.items(),  key=lambda x:-x[1])]
+    return {"grund": {"top": gs[:10], "alle": gs}, "massnahmen": {"top": ms[:10], "alle": ms}}
