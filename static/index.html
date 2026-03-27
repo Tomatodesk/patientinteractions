@@ -2,502 +2,568 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Praxis · Datenerfassung</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Praxis</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #F5F3EE; --surface: #FDFCF9; --surface2: #EEEAE2;
-    --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
-    --ink: #1A1814; --ink2: #6B6659; --ink3: #9E9889;
-    --accent: #2A5C45; --accent-light: #D6EAE0;
-    --accent2: #C94B1E; --accent2-light: #FAEAE3;
-    --yellow: #E8B84B; --yellow-light: #FDF4DC;
-    --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
-    --radius: 10px; --radius-lg: 16px;
-  }
-  body { font-family: var(--sans); background: var(--bg); color: var(--ink); min-height: 100vh; font-size: 14px; line-height: 1.6; }
-  .shell { display: flex; min-height: 100vh; }
-  .sidebar { width: 220px; flex-shrink: 0; background: var(--ink); color: #fff; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
-  .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-  .sidebar-logo .mark { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 4px; }
-  .sidebar-logo .title { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
-  .sidebar-nav { padding: 16px 12px; flex: 1; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; cursor: pointer; color: rgba(255,255,255,0.55); font-size: 13px; transition: all 0.15s; margin-bottom: 2px; border: none; background: none; width: 100%; text-align: left; }
-  .nav-item:hover { color: #fff; background: rgba(255,255,255,0.07); }
-  .nav-item.active { color: #fff; background: var(--accent); }
-  .sidebar-bottom { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
-  .record-count { font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.35); text-align: center; padding: 8px; }
-  .main { flex: 1; min-width: 0; padding: 32px 40px; }
-  .page { display: none; } .page.active { display: block; }
-  .page-header { margin-bottom: 28px; }
-  .page-header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 4px; }
-  .page-header p { color: var(--ink2); font-size: 13px; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 860px; }
-  .form-grid .span2 { grid-column: span 2; }
-  .field { display: flex; flex-direction: column; gap: 6px; }
-  .field label { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink2); }
-  .field input, .field select, .field textarea { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 10px 14px; font-family: var(--sans); font-size: 14px; color: var(--ink); outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
-  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42,92,69,0.12); }
-  .field textarea { resize: vertical; min-height: 80px; }
-  .age-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-  .age-display { font-family: var(--mono); font-size: 12px; color: var(--ink2); background: var(--surface2); border-radius: 6px; padding: 10px 14px; margin-top: 0; }
-  .tag-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
-  .tag { padding: 5px 12px; border-radius: 20px; font-size: 12px; border: 1px solid var(--border2); background: var(--surface); color: var(--ink2); cursor: pointer; transition: all 0.12s; user-select: none; }
-  .tag:hover { border-color: var(--accent); color: var(--accent); }
-  .tag.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .toggle-row { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
-  .toggle { width: 40px; height: 22px; background: var(--surface2); border-radius: 11px; cursor: pointer; position: relative; transition: background 0.2s; border: 1px solid var(--border2); flex-shrink: 0; }
-  .toggle::after { content: ''; width: 16px; height: 16px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-  .toggle.on { background: var(--accent); border-color: var(--accent); }
-  .toggle.on::after { transform: translateX(18px); }
-  .toggle-label { font-size: 13px; }
-  .form-actions { display: flex; gap: 12px; margin-top: 20px; }
-  .btn-primary { background: var(--accent); color: #fff; border: none; border-radius: var(--radius); padding: 11px 28px; font-family: var(--sans); font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
-  .btn-primary:hover { opacity: 0.88; } .btn-primary:active { transform: scale(0.98); }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-secondary { background: var(--surface); color: var(--ink2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 11px 20px; font-family: var(--sans); font-size: 14px; cursor: pointer; transition: all 0.15s; }
-  .btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
-  .toast { position: fixed; bottom: 28px; right: 28px; background: var(--ink); color: #fff; padding: 12px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 500; opacity: 0; transform: translateY(8px); transition: all 0.25s; pointer-events: none; z-index: 999; }
-  .toast.show { opacity: 1; transform: translateY(0); }
-  .toast.error { background: var(--accent2); }
-  .table-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
-  .search-input { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 8px 14px; font-family: var(--sans); font-size: 13px; color: var(--ink); outline: none; width: 240px; transition: border-color 0.15s; }
-  .search-input:focus { border-color: var(--accent); }
-  .btn-sm { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 8px 14px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--ink2); cursor: pointer; transition: all 0.15s; }
-  .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-sm.danger:hover { border-color: var(--accent2); color: var(--accent2); }
-  .table-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--border); }
-  table { width: 100%; border-collapse: collapse; }
-  thead tr { background: var(--ink); }
-  thead th { padding: 11px 14px; text-align: left; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.6); font-weight: 400; white-space: nowrap; }
-  tbody tr { border-bottom: 1px solid var(--border); background: var(--surface); transition: background 0.1s; }
-  tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: var(--surface2); }
-  tbody td { padding: 10px 14px; font-size: 13px; color: var(--ink); vertical-align: top; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
-  .badge-green { background: var(--accent-light); color: var(--accent); }
-  .badge-orange { background: var(--accent2-light); color: var(--accent2); }
-  .badge-yellow { background: var(--yellow-light); color: #8A6A00; }
-  .badge-gray { background: var(--surface2); color: var(--ink3); }
-  .del-btn { background: none; border: none; color: var(--ink3); cursor: pointer; font-size: 13px; padding: 2px 6px; border-radius: 4px; transition: all 0.12s; }
-  .del-btn:hover { color: var(--accent2); background: var(--accent2-light); }
-  .stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 28px; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; }
-  .stat-label { font-size: 11px; color: var(--ink3); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px; }
-  .stat-value { font-size: 26px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
-  .stat-sub { font-size: 11px; color: var(--ink2); margin-top: 4px; font-family: var(--mono); }
-  .charts-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 20px 16px; }
-  .chart-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink2); margin-bottom: 14px; }
-  .empty-state { text-align: center; padding: 60px 20px; color: var(--ink3); }
-  .empty-state .icon { font-size: 36px; margin-bottom: 12px; opacity: 0.4; }
-  .loading { text-align: center; padding: 40px; color: var(--ink3); font-family: var(--mono); font-size: 12px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#F5F3EE;--surface:#FDFCF9;--surface2:#EEEAE2;
+  --border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.16);
+  --ink:#1A1814;--ink2:#6B6659;--ink3:#9E9889;
+  --accent:#2A5C45;--accent-l:#D6EAE0;
+  --red:#C94B1E;--red-l:#FAEAE3;
+  --yel-l:#FDF4DC;
+  --nav-h:64px;--safe-b:env(safe-area-inset-bottom,0px);
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;
+  --r:12px;--rl:18px;
+}
+html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100dvh;font-size:15px;line-height:1.5;overflow-x:hidden}
+
+/* top bar */
+.top-bar{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--border);padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;z-index:50}
+.top-bar-title{font-size:17px;font-weight:600;letter-spacing:-.02em}
+.top-bar-sub{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+
+/* bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + var(--safe-b));background:var(--ink);display:flex;align-items:flex-start;padding-top:4px;z-index:100;border-top:1px solid rgba(255,255,255,.06)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 6px;border:none;background:none;color:rgba(255,255,255,.4);font-family:var(--sans);font-size:11px;cursor:pointer;transition:color .15s}
+.nav-btn.active{color:#fff}
+.nav-icon{font-size:22px;line-height:1;transition:transform .15s}
+.nav-btn.active .nav-icon{transform:scale(1.1)}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:0;margin-top:1px}
+.nav-btn.active .nav-dot{opacity:1}
+
+/* layout */
+.main{padding:16px 16px calc(var(--nav-h) + var(--safe-b) + 16px)}
+.page{display:none}.page.active{display:block}
+
+/* form card */
+.card{background:var(--surface);border-radius:var(--rl);border:1px solid var(--border);padding:16px;margin-bottom:12px}
+.card-title{font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--ink2)}
+.field input,.field textarea{background:var(--bg);border:1.5px solid var(--border2);border-radius:var(--r);padding:13px 14px;font-family:var(--sans);font-size:16px;color:var(--ink);outline:none;width:100%;-webkit-appearance:none;transition:border-color .15s}
+.field input:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:none;min-height:80px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.age-display{background:var(--surface2);border-radius:var(--r);padding:13px 14px;font-family:var(--mono);font-size:13px;color:var(--ink2);min-height:50px;display:flex;align-items:center}
+
+/* ── Smart tag picker ── */
+.tag-picker{margin-bottom:0}
+/* search + add row */
+.tp-input-row{display:flex;gap:8px;margin-bottom:10px;position:relative}
+.tp-input{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 14px;font-family:var(--sans);font-size:16px;color:var(--ink);outline:none;-webkit-appearance:none;transition:border-color .15s}
+.tp-input:focus{border-color:var(--accent)}
+.tp-add-btn{background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:12px 16px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.tp-add-btn:disabled{opacity:.4}
+/* autocomplete dropdown */
+.tp-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--r);z-index:200;max-height:200px;overflow-y:auto;display:none;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.tp-dropdown.open{display:block}
+.tp-option{padding:12px 14px;font-size:15px;cursor:pointer;border-bottom:1px solid var(--border)}
+.tp-option:last-child{border-bottom:none}
+.tp-option:active{background:var(--accent-l)}
+.tp-option mark{background:none;color:var(--accent);font-weight:600}
+/* selected chips */
+.tp-selected{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;min-height:0}
+.tp-chip{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;border-radius:20px;padding:7px 12px;font-size:14px}
+.tp-chip-x{background:none;border:none;color:rgba(255,255,255,.7);font-size:16px;cursor:pointer;line-height:1;padding:0;margin-left:2px}
+/* top-10 quick tags */
+.tp-top-label{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;font-weight:500}
+.tp-top-tags{display:flex;flex-wrap:wrap;gap:7px}
+.tp-tag{padding:7px 13px;border-radius:20px;font-size:14px;border:1.5px solid var(--border2);background:var(--bg);color:var(--ink2);cursor:pointer;user-select:none;transition:all .12s;min-height:36px;display:inline-flex;align-items:center}
+.tp-tag.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.tp-tag:active{transform:scale(.97)}
+
+/* toggle */
+.toggle-row{display:flex;align-items:center;gap:14px;padding:4px 0}
+.toggle{width:50px;height:28px;background:var(--surface2);border-radius:14px;cursor:pointer;position:relative;transition:background .2s;border:1.5px solid var(--border2);flex-shrink:0}
+.toggle::after{content:'';width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.toggle.on{background:var(--accent);border-color:var(--accent)}
+.toggle.on::after{transform:translateX(22px)}
+
+/* simple tags (begl) */
+.tag-row{display:flex;flex-wrap:wrap;gap:8px}
+.tag{padding:8px 14px;border-radius:20px;font-size:14px;border:1.5px solid var(--border2);background:var(--bg);color:var(--ink2);cursor:pointer;user-select:none;min-height:38px;display:inline-flex;align-items:center;transition:all .12s}
+.tag.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* buttons */
+.btn-p{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:16px;font-family:var(--sans);font-size:16px;font-weight:600;cursor:pointer;min-height:54px;-webkit-appearance:none;transition:opacity .15s}
+.btn-p:active{opacity:.85}.btn-p:disabled{opacity:.5}
+.btn-s{width:100%;background:transparent;color:var(--ink2);border:1.5px solid var(--border2);border-radius:var(--r);padding:14px;font-family:var(--sans);font-size:15px;cursor:pointer;min-height:50px;-webkit-appearance:none}
+.form-actions{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+
+/* toast */
+.toast{position:fixed;top:16px;left:16px;right:16px;background:var(--ink);color:#fff;padding:14px 18px;border-radius:var(--r);font-size:14px;font-weight:500;opacity:0;transform:translateY(-8px);transition:all .25s;pointer-events:none;z-index:999;text-align:center}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.err{background:var(--red)}
+
+/* entries */
+.search-bar{display:flex;gap:10px;margin-bottom:12px}
+.search-input{flex:1;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 14px;font-family:var(--sans);font-size:16px;color:var(--ink);outline:none;-webkit-appearance:none}
+.search-input:focus{border-color:var(--accent)}
+.btn-sm{background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 14px;font-family:var(--mono);font-size:12px;color:var(--ink2);cursor:pointer}
+.entry-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:10px}
+.ec-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.ec-date{font-family:var(--mono);font-size:12px;color:var(--ink3)}
+.ec-age{font-size:14px;font-weight:500}
+.ec-grund{font-size:15px;font-weight:500;margin-bottom:8px}
+.ec-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:10px;font-size:12px;font-weight:500}
+.b-g{background:var(--accent-l);color:var(--accent)}
+.b-r{background:var(--red-l);color:var(--red)}
+.b-y{background:var(--yel-l);color:#8A6A00}
+.b-gr{background:var(--surface2);color:var(--ink3)}
+.del-btn{background:none;border:none;color:var(--ink3);font-size:18px;cursor:pointer;padding:4px 8px;border-radius:8px}
+.del-btn:active{background:var(--red-l);color:var(--red)}
+
+/* analyse */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px}
+.stat-label{font-size:11px;color:var(--ink3);font-weight:500;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+.stat-value{font-size:28px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.stat-sub{font-size:11px;color:var(--ink2);margin-top:3px;font-family:var(--mono)}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:12px}
+.chart-title{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-bottom:14px}
+.empty-state{text-align:center;padding:60px 20px;color:var(--ink3);font-size:14px}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.35}
+.loading{text-align:center;padding:48px 20px;color:var(--ink3);font-family:var(--mono);font-size:12px}
 </style>
 </head>
 <body>
-<div class="shell">
-  <nav class="sidebar">
-    <div class="sidebar-logo">
-      <div class="mark">Pädiatrie</div>
-      <div class="title">Praxis</div>
-    </div>
-    <div class="sidebar-nav">
-      <button class="nav-item active" onclick="showPage('erfassen')">
-        <span>✚</span> Erfassen
-      </button>
-      <button class="nav-item" onclick="showPage('tabelle')">
-        <span>≡</span> Einträge
-      </button>
-      <button class="nav-item" onclick="showPage('analyse')">
-        <span>◎</span> Analyse
-      </button>
-    </div>
-    <div class="sidebar-bottom">
-      <div class="record-count" id="sidebar-count">— Einträge</div>
-    </div>
-  </nav>
 
-  <main class="main">
-
-    <!-- ERFASSEN -->
-    <div class="page active" id="page-erfassen">
-      <div class="page-header">
-        <h1>Neue Konsultation</h1>
-        <p>Felder ohne * sind optional.</p>
-      </div>
-      <form id="entry-form" autocomplete="off">
-        <div class="form-grid">
-
-          <div class="field">
-            <label>Datum & Uhrzeit</label>
-            <input type="datetime-local" id="f-datum">
-          </div>
-
-          <div class="field">
-            <label>Dauer (Minuten) *</label>
-            <input type="number" id="f-dauer" min="1" max="180" placeholder="z.B. 15" required>
-          </div>
-
-          <div class="field span2">
-            <label>Alter des Patienten</label>
-            <div class="age-row">
-              <div class="field">
-                <label style="font-size:10px">Jahre</label>
-                <input type="number" id="f-alter-j" min="0" max="18" placeholder="0" oninput="calcAge()">
-              </div>
-              <div class="field">
-                <label style="font-size:10px">Monate</label>
-                <input type="number" id="f-alter-m" min="0" max="11" placeholder="0" oninput="calcAge()">
-              </div>
-              <div class="field">
-                <label style="font-size:10px">Berechnet</label>
-                <div class="age-display" id="age-display">—</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="field span2">
-            <label>Konsultationsgrund *</label>
-            <div class="tag-group" id="grund-tags">
-              <span class="tag" onclick="toggleTag(this)">Fieber</span>
-              <span class="tag" onclick="toggleTag(this)">Husten</span>
-              <span class="tag" onclick="toggleTag(this)">Bauchschmerzen</span>
-              <span class="tag" onclick="toggleTag(this)">Impfung</span>
-              <span class="tag" onclick="toggleTag(this)">Hörtest</span>
-              <span class="tag" onclick="toggleTag(this)">Schlaf</span>
-              <span class="tag" onclick="toggleTag(this)">Erbrechen</span>
-              <span class="tag" onclick="toggleTag(this)">Schnupfen</span>
-              <span class="tag" onclick="toggleTag(this)">Sprache</span>
-              <span class="tag" onclick="toggleTag(this)">Hyposensibilisierung</span>
-              <span class="tag" onclick="toggleTag(this)">U3</span>
-              <span class="tag" onclick="toggleTag(this)">U4</span>
-              <span class="tag" onclick="toggleTag(this)">U5</span>
-              <span class="tag" onclick="toggleTag(this)">U6</span>
-              <span class="tag" onclick="toggleTag(this)">U7</span>
-              <span class="tag" onclick="toggleTag(this)">U8</span>
-              <span class="tag" onclick="toggleTag(this)">U9</span>
-              <span class="tag" onclick="toggleTag(this)">U10</span>
-              <span class="tag" onclick="toggleTag(this)">BE Kontrolle</span>
-              <span class="tag" onclick="toggleTag(this)">Überweisung</span>
-            </div>
-            <input type="text" id="f-grund-custom" placeholder="Weiterer Grund…" style="margin-top:8px">
-          </div>
-
-          <div class="field span2">
-            <label>Maßnahmen</label>
-            <div class="tag-group" id="mass-tags">
-              <span class="tag" onclick="toggleTag(this)">Beratung</span>
-              <span class="tag" onclick="toggleTag(this)">Impfung</span>
-              <span class="tag" onclick="toggleTag(this)">Ausschluss</span>
-              <span class="tag" onclick="toggleTag(this)">Keine</span>
-              <span class="tag" onclick="toggleTag(this)">Ibuprofen</span>
-              <span class="tag" onclick="toggleTag(this)">Paracetamol</span>
-              <span class="tag" onclick="toggleTag(this)">ATB</span>
-              <span class="tag" onclick="toggleTag(this)">Creme</span>
-              <span class="tag" onclick="toggleTag(this)">Nasentropfen</span>
-              <span class="tag" onclick="toggleTag(this)">Blutentnahme</span>
-              <span class="tag" onclick="toggleTag(this)">Überweisung</span>
-              <span class="tag" onclick="toggleTag(this)">Kontrolle</span>
-              <span class="tag" onclick="toggleTag(this)">Schädelsono</span>
-              <span class="tag" onclick="toggleTag(this)">Salbutamol</span>
-            </div>
-            <input type="text" id="f-mass-custom" placeholder="Weitere Maßnahme…" style="margin-top:8px">
-          </div>
-
-          <div class="field">
-            <label>Begleitperson</label>
-            <div class="tag-group" id="begl-tags">
-              <span class="tag" onclick="toggleSingle(this,'begl-tags')">Mama</span>
-              <span class="tag" onclick="toggleSingle(this,'begl-tags')">Papa</span>
-              <span class="tag" onclick="toggleSingle(this,'begl-tags')">Beide</span>
-              <span class="tag" onclick="toggleSingle(this,'begl-tags')">Andere</span>
-              <span class="tag" onclick="toggleSingle(this,'begl-tags')">Keine</span>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Migrationshintergrund</label>
-            <div class="toggle-row">
-              <div class="toggle" id="mig-toggle" onclick="this.classList.toggle('on');document.getElementById('mig-label').textContent=this.classList.contains('on')?'Ja':'Nein'"></div>
-              <span class="toggle-label" id="mig-label">Nein</span>
-            </div>
-          </div>
-
-          <div class="field span2">
-            <label>Notizen</label>
-            <textarea id="f-notizen" placeholder="Freie Anmerkungen…"></textarea>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn-primary" id="submit-btn">Speichern</button>
-          <button type="button" class="btn-secondary" onclick="resetForm()">Zurücksetzen</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- TABELLE -->
-    <div class="page" id="page-tabelle">
-      <div class="page-header">
-        <h1>Einträge</h1>
-        <p>Alle gespeicherten Konsultationen.</p>
-      </div>
-      <div class="table-toolbar">
-        <input class="search-input" type="text" id="search-input" placeholder="Suchen…" oninput="searchEntries()">
-        <div style="display:flex;gap:8px">
-          <button class="btn-sm" onclick="window.location='/api/export/csv'">↓ CSV Export</button>
-        </div>
-      </div>
-      <div id="table-container"><div class="loading">Wird geladen…</div></div>
-    </div>
-
-    <!-- ANALYSE -->
-    <div class="page" id="page-analyse">
-      <div class="page-header">
-        <h1>Analyse</h1>
-        <p>Live-Auswertung aller gespeicherten Konsultationen.</p>
-      </div>
-      <div id="analyse-container"><div class="loading">Wird geladen…</div></div>
-    </div>
-
-  </main>
+<div class="top-bar">
+  <div class="top-bar-title" id="top-title">Neue Konsultation</div>
+  <div class="top-bar-sub" id="entry-count">— Einträge</div>
 </div>
+
+<main class="main">
+
+  <!-- ERFASSEN -->
+  <div class="page active" id="page-erfassen">
+    <form id="entry-form" autocomplete="off">
+
+      <div class="card">
+        <div class="card-title">Zeitpunkt & Dauer</div>
+        <div class="two-col">
+          <div class="field"><label>Datum & Zeit</label><input type="datetime-local" id="f-datum"></div>
+          <div class="field"><label>Dauer (min) *</label><input type="number" id="f-dauer" min="1" max="180" placeholder="15" required inputmode="numeric"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Alter des Patienten</div>
+        <div class="three-col">
+          <div class="field"><label>Jahre</label><input type="number" id="f-alter-j" min="0" max="18" placeholder="0" oninput="calcAge()" inputmode="numeric"></div>
+          <div class="field"><label>Monate</label><input type="number" id="f-alter-m" min="0" max="11" placeholder="0" oninput="calcAge()" inputmode="numeric"></div>
+          <div class="field"><label>Ergebnis</label><div class="age-display" id="age-display">—</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Konsultationsgrund *</div>
+        <div class="tag-picker" id="picker-grund"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Maßnahmen</div>
+        <div class="tag-picker" id="picker-mass"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Begleitperson</div>
+        <div class="tag-row" id="begl-tags">
+          <span class="tag" onclick="toggleSingle(this,'begl-tags')">Mama</span>
+          <span class="tag" onclick="toggleSingle(this,'begl-tags')">Papa</span>
+          <span class="tag" onclick="toggleSingle(this,'begl-tags')">Beide</span>
+          <span class="tag" onclick="toggleSingle(this,'begl-tags')">Andere</span>
+          <span class="tag" onclick="toggleSingle(this,'begl-tags')">Keine</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Migrationshintergrund</div>
+        <div class="toggle-row">
+          <div class="toggle" id="mig-toggle" onclick="this.classList.toggle('on');document.getElementById('mig-label').textContent=this.classList.contains('on')?'Ja':'Nein'"></div>
+          <span id="mig-label">Nein</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Notizen</div>
+        <div class="field" style="margin-bottom:0"><textarea id="f-notizen" placeholder="Freie Anmerkungen…"></textarea></div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-p" id="submit-btn">Speichern</button>
+        <button type="button" class="btn-s" onclick="resetForm()">Zurücksetzen</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- EINTRÄGE -->
+  <div class="page" id="page-tabelle">
+    <div class="search-bar">
+      <input class="search-input" type="text" id="search-input" placeholder="Suchen…" oninput="searchEntries()">
+      <button class="btn-sm" onclick="window.location='/api/export/csv'">↓ CSV</button>
+    </div>
+    <div id="table-container"><div class="loading">Wird geladen…</div></div>
+  </div>
+
+  <!-- ANALYSE -->
+  <div class="page" id="page-analyse">
+    <div id="analyse-container"><div class="loading">Wird geladen…</div></div>
+  </div>
+
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-erfassen" onclick="showPage('erfassen',this)">
+    <span class="nav-icon">✚</span><span>Erfassen</span><div class="nav-dot"></div>
+  </button>
+  <button class="nav-btn" id="nav-tabelle" onclick="showPage('tabelle',this)">
+    <span class="nav-icon">≡</span><span>Einträge</span><div class="nav-dot"></div>
+  </button>
+  <button class="nav-btn" id="nav-analyse" onclick="showPage('analyse',this)">
+    <span class="nav-icon">◎</span><span>Analyse</span><div class="nav-dot"></div>
+  </button>
+</nav>
+
 <div class="toast" id="toast"></div>
 
 <script>
+// ── State ─────────────────────────────────────────────────────────────────────
 const API = '';
+let vorschlaege = { grund: { top:[], alle:[] }, massnahmen: { top:[], alle:[] } };
+let pickers = {};
 let searchTimer = null;
 let chartInstances = {};
 
-// ── Nav ───────────────────────────────────────────────────────────────────────
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  event.currentTarget.classList.add('active');
-  if (id === 'tabelle') loadTable();
-  if (id === 'analyse') loadAnalyse();
+// ── TagPicker class ───────────────────────────────────────────────────────────
+class TagPicker {
+  constructor(containerId, type) {
+    this.container = document.getElementById(containerId);
+    this.type = type;       // 'grund' | 'massnahmen'
+    this.selected = new Set();
+    this.render();
+  }
+
+  get data() { return vorschlaege[this.type === 'grund' ? 'grund' : 'massnahmen']; }
+
+  render() {
+    this.container.innerHTML = `
+      <div id="${this.type}-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:${0}px"></div>
+      <div class="tp-input-row">
+        <input class="tp-input" id="${this.type}-input" type="text" placeholder="Suchen oder neu eingeben…" autocomplete="off" inputmode="text">
+        <button type="button" class="tp-add-btn" id="${this.type}-addbtn" disabled>+ Hinzufügen</button>
+        <div class="tp-dropdown" id="${this.type}-dd"></div>
+      </div>
+      <div class="tp-top-label">Häufig verwendet</div>
+      <div class="tp-top-tags" id="${this.type}-top"></div>
+    `;
+    this.chipsEl = document.getElementById(`${this.type}-chips`);
+    this.inputEl = document.getElementById(`${this.type}-input`);
+    this.addBtn  = document.getElementById(`${this.type}-addbtn`);
+    this.ddEl    = document.getElementById(`${this.type}-dd`);
+    this.topEl   = document.getElementById(`${this.type}-top`);
+
+    this.inputEl.addEventListener('input', () => this._onInput());
+    this.inputEl.addEventListener('focus', () => this._onInput());
+    this.inputEl.addEventListener('blur', () => setTimeout(() => this._closeDD(), 180));
+    this.addBtn.addEventListener('click', () => this._addCustom());
+    this.renderTop();
+  }
+
+  renderTop() {
+    const top = this.data.top.length
+      ? this.data.top
+      : ['Fieber','Husten','Impfung','Bauchschmerzen','Schlaf','U3','U4','U5','U6','U7','U8','U9','U10','Beratung','Ausschluss','Keine','ATB','Creme','Ibuprofen','Blutentnahme'].slice(0, this.type === 'grund' ? 20 : 14);
+
+    this.topEl.innerHTML = top.map(v => {
+      const sel = this.selected.has(v);
+      return `<span class="tp-tag${sel?' active':''}" data-v="${v}" onclick="pickers['${this.type}'].toggleTop(this,'${v}')">${v}</span>`;
+    }).join('');
+  }
+
+  toggleTop(el, val) {
+    if (this.selected.has(val)) {
+      this.selected.delete(val);
+      el.classList.remove('active');
+    } else {
+      this.selected.add(val);
+      el.classList.add('active');
+    }
+    this._renderChips();
+  }
+
+  _renderChips() {
+    if (this.selected.size === 0) {
+      this.chipsEl.style.marginBottom = '0';
+      this.chipsEl.innerHTML = '';
+      return;
+    }
+    this.chipsEl.style.marginBottom = '10px';
+    this.chipsEl.innerHTML = [...this.selected].map(v =>
+      `<span class="tp-chip">${v}<button type="button" class="tp-chip-x" onclick="pickers['${this.type}'].remove('${v}')">×</button></span>`
+    ).join('');
+  }
+
+  remove(val) {
+    this.selected.delete(val);
+    this._renderChips();
+    this.renderTop();
+  }
+
+  _onInput() {
+    const q = this.inputEl.value.trim();
+    this.addBtn.disabled = q.length === 0;
+    const all = this.data.alle.length
+      ? this.data.alle
+      : ['Fieber','Husten','Impfung','Bauchschmerzen','Schnupfen','Erbrechen','Schlaf','Sprache','Hörtest','Hyposensibilisierung',
+         'U3','U4','U5','U6','U7','U8','U9','U10','U11','BE Kontrolle','Überweisung',
+         'Beratung','Ausschluss','Keine','ATB','Creme','Ibuprofen','Paracetamol','Blutentnahme','Nasentropfen','Kontrolle','Schädelsono','Salbutamol'];
+    if (!q) { this._closeDD(); return; }
+    const matches = all.filter(v => v.toLowerCase().includes(q.toLowerCase()) && !this.selected.has(v)).slice(0, 8);
+    if (matches.length === 0) { this._closeDD(); return; }
+    this.ddEl.innerHTML = matches.map(v => {
+      const hi = v.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+      return `<div class="tp-option" onmousedown="pickers['${this.type}'].selectDD('${v}')">${hi}</div>`;
+    }).join('');
+    this.ddEl.classList.add('open');
+  }
+
+  selectDD(val) {
+    this.selected.add(val);
+    this.inputEl.value = '';
+    this.addBtn.disabled = true;
+    this._closeDD();
+    this._renderChips();
+    this.renderTop();
+    // Add to alle if new
+    if (!this.data.alle.includes(val)) this.data.alle.unshift(val);
+  }
+
+  _addCustom() {
+    const val = this.inputEl.value.trim();
+    if (!val) return;
+    this.selectDD(val);
+  }
+
+  _closeDD() {
+    this.ddEl.classList.remove('open');
+    this.ddEl.innerHTML = '';
+  }
+
+  getValues() { return [...this.selected]; }
+
+  reset() {
+    this.selected.clear();
+    this.inputEl.value = '';
+    this.addBtn.disabled = true;
+    this._closeDD();
+    this._renderChips();
+    this.renderTop();
+  }
+
+  refreshTop(newData) {
+    // merge new data
+    if (newData) {
+      this.data.top = newData.top;
+      newData.alle.forEach(v => { if (!this.data.alle.includes(v)) this.data.alle.push(v); });
+    }
+    this.renderTop();
+  }
 }
 
-// ── Form helpers ──────────────────────────────────────────────────────────────
-function initForm() {
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() {
+  initDatetime();
+  updateCount();
+  try {
+    const res = await fetch(`${API}/api/vorschlaege`);
+    vorschlaege = await res.json();
+  } catch {}
+  pickers.grund = new TagPicker('picker-grund', 'grund');
+  pickers.massnahmen = new TagPicker('picker-mass', 'massnahmen');
+}
+
+function initDatetime() {
   const now = new Date();
   const p = n => String(n).padStart(2,'0');
   document.getElementById('f-datum').value =
     `${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}T${p(now.getHours())}:${p(now.getMinutes())}`;
 }
 
-function calcAge() {
-  const j = parseInt(document.getElementById('f-alter-j').value)||0;
-  const m = parseInt(document.getElementById('f-alter-m').value)||0;
-  const t = j*12+m;
-  document.getElementById('age-display').textContent = t > 0
-    ? (j > 0 ? `${j} J ${m} M` : `${m} M`) + ` (${t} Mo.)`
-    : '—';
+// ── Nav ───────────────────────────────────────────────────────────────────────
+const pageTitles = { erfassen:'Neue Konsultation', tabelle:'Einträge', analyse:'Analyse' };
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  (btn||document.getElementById('nav-'+id)).classList.add('active');
+  document.getElementById('top-title').textContent = pageTitles[id];
+  if (id==='tabelle') loadTable();
+  if (id==='analyse') loadAnalyse();
 }
 
-function toggleTag(el) { el.classList.toggle('selected'); }
+// ── Form helpers ──────────────────────────────────────────────────────────────
+function calcAge() {
+  const j=parseInt(document.getElementById('f-alter-j').value)||0;
+  const m=parseInt(document.getElementById('f-alter-m').value)||0;
+  const t=j*12+m;
+  document.getElementById('age-display').textContent = t>0
+    ? (j>0?`${j}J ${m}M`:`${m} Mo.`)+` · ${t}Mo.` : '—';
+}
 
 function toggleSingle(el, groupId) {
-  document.querySelectorAll(`#${groupId} .tag`).forEach(t => t.classList.remove('selected'));
-  el.classList.add('selected');
+  document.querySelectorAll(`#${groupId} .tag`).forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
 }
 
-function getSelected(groupId) {
-  return Array.from(document.querySelectorAll(`#${groupId} .tag.selected`)).map(t => t.textContent.trim());
+function getActive(groupId) {
+  return Array.from(document.querySelectorAll(`#${groupId} .tag.active`)).map(t=>t.textContent.trim());
 }
 
 function resetForm() {
   document.getElementById('entry-form').reset();
-  document.querySelectorAll('.tag.selected').forEach(t => t.classList.remove('selected'));
+  document.querySelectorAll('#begl-tags .tag').forEach(t=>t.classList.remove('active'));
   document.getElementById('mig-toggle').classList.remove('on');
-  document.getElementById('mig-label').textContent = 'Nein';
-  document.getElementById('age-display').textContent = '—';
-  initForm();
+  document.getElementById('mig-label').textContent='Nein';
+  document.getElementById('age-display').textContent='—';
+  pickers.grund?.reset();
+  pickers.massnahmen?.reset();
+  initDatetime();
 }
 
 // ── Submit ────────────────────────────────────────────────────────────────────
 document.getElementById('entry-form').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const grund = [...getSelected('grund-tags')];
-  const gc = document.getElementById('f-grund-custom').value.trim();
-  if (gc) gc.split(',').map(s=>s.trim()).filter(Boolean).forEach(g=>grund.push(g));
-
-  if (!grund.length) { showToast('Bitte mindestens einen Konsultationsgrund angeben.', true); return; }
-
-  const mass = [...getSelected('mass-tags')];
-  const mc = document.getElementById('f-mass-custom').value.trim();
-  if (mc) mc.split(',').map(s=>s.trim()).filter(Boolean).forEach(m=>mass.push(m));
-
-  const j = parseInt(document.getElementById('f-alter-j').value)||0;
-  const m = parseInt(document.getElementById('f-alter-m').value)||0;
+  const grund = pickers.grund.getValues();
+  if (!grund.length) { showToast('Bitte Konsultationsgrund angeben', true); return; }
+  const mass = pickers.massnahmen.getValues();
+  const j=parseInt(document.getElementById('f-alter-j').value)||0;
+  const m=parseInt(document.getElementById('f-alter-m').value)||0;
 
   const payload = {
-    datum: document.getElementById('f-datum').value || null,
-    alter_j: j, alter_m: m, alter_ges: j*12+m,
+    datum: document.getElementById('f-datum').value||null,
+    alter_j:j, alter_m:m, alter_ges:j*12+m,
     dauer: parseInt(document.getElementById('f-dauer').value)||null,
     grund, massnahmen: mass,
-    begleitperson: getSelected('begl-tags')[0] || '',
+    begleitperson: getActive('begl-tags')[0]||'',
     mh: document.getElementById('mig-toggle').classList.contains('on'),
     notizen: document.getElementById('f-notizen').value.trim()
   };
 
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = true; btn.textContent = 'Speichert…';
-
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true; btn.textContent='Speichert…';
   try {
     const res = await fetch(`${API}/api/konsultationen`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) throw new Error();
+    // refresh suggestions after save
+    const vres = await fetch(`${API}/api/vorschlaege`);
+    vorschlaege = await vres.json();
     resetForm();
-    showToast('✓ Konsultation gespeichert');
+    showToast('✓ Gespeichert');
     updateCount();
-  } catch(err) {
-    showToast('Fehler beim Speichern.', true);
-    console.error(err);
-  } finally {
-    btn.disabled = false; btn.textContent = 'Speichern';
-  }
+  } catch { showToast('Fehler beim Speichern', true); }
+  finally { btn.disabled=false; btn.textContent='Speichern'; }
 });
 
-// ── Table ─────────────────────────────────────────────────────────────────────
-async function loadTable(q = '') {
-  const container = document.getElementById('table-container');
+// ── Einträge ──────────────────────────────────────────────────────────────────
+async function loadTable(q='') {
+  const c=document.getElementById('table-container');
   try {
-    const res = await fetch(`${API}/api/konsultationen${q ? '?q='+encodeURIComponent(q) : ''}`);
-    const data = await res.json();
-    if (!data.length) {
-      container.innerHTML = '<div class="empty-state"><div class="icon">📋</div>Noch keine Einträge.</div>';
-      return;
-    }
-    container.innerHTML = `
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Datum</th><th>Alter</th><th>Grund</th><th>Dauer</th>
-            <th>Maßnahmen</th><th>Begl.</th><th>MH</th><th>Notizen</th><th></th>
-          </tr></thead>
-          <tbody>${data.map(rowHtml).join('')}</tbody>
-        </table>
-      </div>`;
-  } catch(e) {
-    container.innerHTML = '<div class="empty-state">Fehler beim Laden.</div>';
-  }
+    const res=await fetch(`${API}/api/konsultationen${q?'?q='+encodeURIComponent(q):''}`);
+    const data=await res.json();
+    if (!data.length) { c.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>Noch keine Einträge.</div>'; return; }
+    c.innerHTML=data.map(cardHtml).join('');
+  } catch { c.innerHTML='<div class="empty-state">Fehler beim Laden.</div>'; }
 }
 
-function rowHtml(e) {
-  const d = e.datum ? new Date(e.datum) : null;
-  const p = n => String(n).padStart(2,'0');
-  const dateStr = d ? `${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}` : '—';
-  const ageStr = e.alter_ges > 0
-    ? (e.alter_j > 0 ? `${e.alter_j} J. ${e.alter_m} M.` : `${e.alter_m} Mo.`)
-    : '—';
-  const grundStr = (e.grund||[]).slice(0,2).join(', ') + (e.grund?.length > 2 ? ` +${e.grund.length-2}` : '');
-  const massStr = (e.massnahmen||[]).slice(0,2).join(', ') + (e.massnahmen?.length > 2 ? ` +${e.massnahmen.length-2}` : '');
-  const mhBadge = e.mh ? '<span class="badge badge-orange">Ja</span>' : '<span class="badge badge-gray">Nein</span>';
-  return `<tr>
-    <td style="font-family:var(--mono);font-size:12px">${dateStr}</td>
-    <td>${ageStr}</td><td>${grundStr || '—'}</td>
-    <td><span class="badge badge-yellow">${e.dauer ?? '—'} min</span></td>
-    <td>${massStr || '—'}</td><td>${e.begleitperson || '—'}</td>
-    <td>${mhBadge}</td>
-    <td style="color:var(--ink2);font-size:12px">${(e.notizen||'').substring(0,35)}${e.notizen?.length>35?'…':''}</td>
-    <td><button class="del-btn" onclick="deleteEntry(${e.id})">✕</button></td>
-  </tr>`;
+function cardHtml(e) {
+  const d=e.datum?new Date(e.datum):null;
+  const p=n=>String(n).padStart(2,'0');
+  const dateStr=d?`${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`:'—';
+  const ageStr=e.alter_ges>0?(e.alter_j>0?`${e.alter_j} J. ${e.alter_m} M.`:`${e.alter_m} Mo.`):'—';
+  const grundStr=(e.grund||[]).join(', ')||'—';
+  const massStr=(e.massnahmen||[]).join(', ')||'—';
+  return `<div class="entry-card">
+    <div class="ec-header">
+      <div><div class="ec-date">${dateStr}</div><div class="ec-age">${ageStr}</div></div>
+      <button class="del-btn" onclick="deleteEntry(${e.id})">✕</button>
+    </div>
+    <div class="ec-grund">${grundStr}</div>
+    <div class="ec-meta">
+      <span class="badge b-y">${e.dauer??'—'} min</span>
+      ${massStr!=='—'?`<span class="badge b-g">${massStr}</span>`:''}
+      ${e.begleitperson?`<span class="badge b-gr">${e.begleitperson}</span>`:''}
+      ${e.mh?'<span class="badge b-r">MH</span>':''}
+    </div>
+    ${e.notizen?`<div style="margin-top:8px;font-size:13px;color:var(--ink2)">${e.notizen}</div>`:''}
+  </div>`;
 }
 
 function searchEntries() {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => loadTable(document.getElementById('search-input').value), 300);
+  searchTimer=setTimeout(()=>loadTable(document.getElementById('search-input').value),300);
 }
 
 async function deleteEntry(id) {
-  if (!confirm('Eintrag wirklich löschen?')) return;
-  await fetch(`${API}/api/konsultationen/${id}`, { method: 'DELETE' });
-  loadTable(document.getElementById('search-input')?.value || '');
+  if (!confirm('Eintrag löschen?')) return;
+  await fetch(`${API}/api/konsultationen/${id}`,{method:'DELETE'});
+  loadTable(document.getElementById('search-input')?.value||'');
   updateCount();
-  showToast('Eintrag gelöscht');
 }
 
 // ── Analyse ───────────────────────────────────────────────────────────────────
 async function loadAnalyse() {
-  const container = document.getElementById('analyse-container');
+  const c=document.getElementById('analyse-container');
   try {
-    const res = await fetch(`${API}/api/stats`);
-    const s = await res.json();
-
-    if (s.total === 0) {
-      container.innerHTML = '<div class="empty-state"><div class="icon">◎</div>Noch keine Daten. Starte mit der Erfassung.</div>';
-      return;
-    }
-
-    container.innerHTML = `
-      <div class="stats-grid">
+    const res=await fetch(`${API}/api/stats`);
+    const s=await res.json();
+    if (s.total===0) { c.innerHTML='<div class="empty-state"><div class="empty-icon">◎</div>Noch keine Daten.</div>'; return; }
+    c.innerHTML=`
+      <div class="stats-row">
         <div class="stat-card"><div class="stat-label">Konsultationen</div><div class="stat-value">${s.total}</div></div>
-        <div class="stat-card"><div class="stat-label">Ø Dauer</div><div class="stat-value">${s.avg_dauer}<span style="font-size:14px;font-weight:400;color:var(--ink2)"> min</span></div></div>
-        <div class="stat-card"><div class="stat-label">Mit Migrationshintergrund</div><div class="stat-value">${s.mh_pct}<span style="font-size:14px;font-weight:400;color:var(--ink2)">%</span></div><div class="stat-sub">${s.mh_count} von ${s.total}</div></div>
+        <div class="stat-card"><div class="stat-label">Ø Dauer</div><div class="stat-value">${s.avg_dauer}<span style="font-size:15px;font-weight:400;color:var(--ink2)"> min</span></div></div>
+        <div class="stat-card"><div class="stat-label">Mit MH</div><div class="stat-value">${s.mh_pct}<span style="font-size:15px;font-weight:400;color:var(--ink2)">%</span></div><div class="stat-sub">${s.mh_count} von ${s.total}</div></div>
+        <div class="stat-card"><div class="stat-label">Häufigster Grund</div><div class="stat-value" style="font-size:16px;margin-top:2px">${s.top_grund||'—'}</div><div class="stat-sub">${s.top_grund_count?s.top_grund_count+'×':''}</div></div>
       </div>
-      <div class="charts-grid">
-        <div class="chart-card"><div class="chart-title">Altersverteilung</div><div style="position:relative;height:220px"><canvas id="chart-alter"></canvas></div></div>
-        <div class="chart-card"><div class="chart-title">Häufigste Gründe</div><div style="position:relative;height:220px"><canvas id="chart-grund"></canvas></div></div>
-        <div class="chart-card"><div class="chart-title">Dauer-Verteilung</div><div style="position:relative;height:220px"><canvas id="chart-dauer"></canvas></div></div>
-      </div>`;
-
-    const tc = '#9E9889', gc = 'rgba(0,0,0,0.06)';
-    const baseOpts = { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
-      scales:{ x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}}, y:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true} } };
-
-    Object.values(chartInstances).forEach(c => c.destroy());
-    chartInstances = {};
-
-    chartInstances.alter = new Chart(document.getElementById('chart-alter'), {
-      type: 'bar',
-      data: { labels: Object.keys(s.alter_dist), datasets:[{ data: Object.values(s.alter_dist), backgroundColor:'#2A5C45', borderRadius:5 }] },
-      options: { ...baseOpts }
-    });
-
-    const topGrund = Object.entries(s.grund_counts).slice(0,8);
-    chartInstances.grund = new Chart(document.getElementById('chart-grund'), {
-      type: 'bar',
-      data: { labels: topGrund.map(g=>g[0]), datasets:[{ data: topGrund.map(g=>g[1]), backgroundColor:'#5C8A2A', borderRadius:5 }] },
-      options: { ...baseOpts, indexAxis:'y', scales:{ x:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true}, y:{ticks:{color:tc,font:{size:10}},grid:{color:'transparent'}} } }
-    });
-
-    chartInstances.dauer = new Chart(document.getElementById('chart-dauer'), {
-      type: 'bar',
-      data: { labels: Object.keys(s.dauer_buckets), datasets:[{ data: Object.values(s.dauer_buckets), backgroundColor:'#C94B1E', borderRadius:5 }] },
-      options: { ...baseOpts }
-    });
-
-  } catch(e) {
-    container.innerHTML = '<div class="empty-state">Fehler beim Laden der Analyse.</div>';
-    console.error(e);
-  }
+      <div class="chart-card"><div class="chart-title">Altersverteilung</div><div style="position:relative;height:200px"><canvas id="ca"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Häufigste Gründe</div><div style="position:relative;height:${Math.max(180,Object.keys(s.grund_counts).length*34+40)}px"><canvas id="cg"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Dauer-Verteilung</div><div style="position:relative;height:200px"><canvas id="cd"></canvas></div></div>
+    `;
+    const tc='#9E9889',gc='rgba(0,0,0,.06)';
+    Object.values(chartInstances).forEach(c=>c.destroy()); chartInstances={};
+    chartInstances.a=new Chart(document.getElementById('ca'),{type:'bar',data:{labels:Object.keys(s.alter_dist),datasets:[{data:Object.values(s.alter_dist),backgroundColor:'#2A5C45',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true}}}});
+    const tg=Object.entries(s.grund_counts).slice(0,10);
+    chartInstances.g=new Chart(document.getElementById('cg'),{type:'bar',data:{labels:tg.map(g=>g[0]),datasets:[{data:tg.map(g=>g[1]),backgroundColor:'#5C8A2A',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true},y:{ticks:{color:tc,font:{size:10}},grid:{color:'transparent'}}}}});
+    chartInstances.d=new Chart(document.getElementById('cd'),{type:'bar',data:{labels:Object.keys(s.dauer_buckets),datasets:[{data:Object.values(s.dauer_buckets),backgroundColor:'#C94B1E',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true}}}});
+  } catch { c.innerHTML='<div class="empty-state">Fehler beim Laden.</div>'; }
 }
 
 // ── Utils ─────────────────────────────────────────────────────────────────────
 async function updateCount() {
   try {
-    const res = await fetch(`${API}/api/stats`);
-    const s = await res.json();
-    document.getElementById('sidebar-count').textContent = s.total + (s.total === 1 ? ' Eintrag' : ' Einträge');
+    const res=await fetch(`${API}/api/stats`);
+    const s=await res.json();
+    document.getElementById('entry-count').textContent=s.total+(s.total===1?' Eintrag':' Einträge');
   } catch {}
 }
-
-function showToast(msg, isError = false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast' + (isError ? ' error' : '') + ' show';
-  setTimeout(() => t.classList.remove('show'), 2800);
+function showToast(msg,isErr=false) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast'+(isErr?' err':'')+' show';
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-initForm();
-updateCount();
+init();
 </script>
 </body>
 </html>
