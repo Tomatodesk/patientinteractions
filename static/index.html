@@ -15,20 +15,15 @@
   --border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.16);
   --ink:#1A1814;--ink2:#6B6659;--ink3:#9E9889;
   --accent:#2A5C45;--accent-l:#D6EAE0;
-  --red:#C94B1E;--red-l:#FAEAE3;
-  --yel-l:#FDF4DC;
+  --red:#C94B1E;--red-l:#FAEAE3;--yel-l:#FDF4DC;
   --nav-h:64px;--safe-b:env(safe-area-inset-bottom,0px);
   --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;
   --r:12px;--rl:18px;
 }
 html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100dvh;font-size:15px;line-height:1.5;overflow-x:hidden}
-
-/* top bar */
 .top-bar{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--border);padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;z-index:50}
 .top-bar-title{font-size:17px;font-weight:600;letter-spacing:-.02em}
 .top-bar-sub{font-family:var(--mono);font-size:11px;color:var(--ink3)}
-
-/* bottom nav */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + var(--safe-b));background:var(--ink);display:flex;align-items:flex-start;padding-top:4px;z-index:100;border-top:1px solid rgba(255,255,255,.06)}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 6px;border:none;background:none;color:rgba(255,255,255,.4);font-family:var(--sans);font-size:11px;cursor:pointer;transition:color .15s}
 .nav-btn.active{color:#fff}
@@ -36,12 +31,8 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 .nav-btn.active .nav-icon{transform:scale(1.1)}
 .nav-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:0;margin-top:1px}
 .nav-btn.active .nav-dot{opacity:1}
-
-/* layout */
 .main{padding:16px 16px calc(var(--nav-h) + var(--safe-b) + 16px)}
 .page{display:none}.page.active{display:block}
-
-/* form card */
 .card{background:var(--surface);border-radius:var(--rl);border:1px solid var(--border);padding:16px;margin-bottom:12px}
 .card-title{font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:12px}
 .field{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
@@ -53,57 +44,47 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .age-display{background:var(--surface2);border-radius:var(--r);padding:13px 14px;font-family:var(--mono);font-size:13px;color:var(--ink2);min-height:50px;display:flex;align-items:center}
-
-/* ── Smart tag picker ── */
-.tag-picker{margin-bottom:0}
-/* search + add row */
+.collapsible-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:2px 0}
+.collapsible-header .ch-title{font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3)}
+.collapsible-arrow{font-size:14px;color:var(--ink3);transition:transform .2s}
+.collapsible-header.open .collapsible-arrow{transform:rotate(180deg)}
+.collapsible-body{overflow:hidden;max-height:0;transition:max-height .35s ease}
+.collapsible-body.open{max-height:1000px}
+.collapsible-inner{padding-top:12px}
+.tp-chips{display:flex;flex-wrap:wrap;gap:8px}
+.tp-chips:not(:empty){margin-bottom:10px}
+.tp-chip{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;border-radius:20px;padding:7px 12px;font-size:14px}
+.tp-chip-x{background:none;border:none;color:rgba(255,255,255,.7);font-size:16px;cursor:pointer;line-height:1;padding:0}
 .tp-input-row{display:flex;gap:8px;margin-bottom:10px;position:relative}
 .tp-input{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 14px;font-family:var(--sans);font-size:16px;color:var(--ink);outline:none;-webkit-appearance:none;transition:border-color .15s}
 .tp-input:focus{border-color:var(--accent)}
 .tp-add-btn{background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:12px 16px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .tp-add-btn:disabled{opacity:.4}
-/* autocomplete dropdown */
-.tp-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--r);z-index:200;max-height:200px;overflow-y:auto;display:none;box-shadow:0 4px 16px rgba(0,0,0,.12)}
-.tp-dropdown.open{display:block}
+.tp-dd{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--r);z-index:200;max-height:200px;overflow-y:auto;display:none;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.tp-dd.open{display:block}
 .tp-option{padding:12px 14px;font-size:15px;cursor:pointer;border-bottom:1px solid var(--border)}
 .tp-option:last-child{border-bottom:none}
 .tp-option:active{background:var(--accent-l)}
 .tp-option mark{background:none;color:var(--accent);font-weight:600}
-/* selected chips */
-.tp-selected{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;min-height:0}
-.tp-chip{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;border-radius:20px;padding:7px 12px;font-size:14px}
-.tp-chip-x{background:none;border:none;color:rgba(255,255,255,.7);font-size:16px;cursor:pointer;line-height:1;padding:0;margin-left:2px}
-/* top-10 quick tags */
 .tp-top-label{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;font-weight:500}
 .tp-top-tags{display:flex;flex-wrap:wrap;gap:7px}
 .tp-tag{padding:7px 13px;border-radius:20px;font-size:14px;border:1.5px solid var(--border2);background:var(--bg);color:var(--ink2);cursor:pointer;user-select:none;transition:all .12s;min-height:36px;display:inline-flex;align-items:center}
 .tp-tag.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.tp-tag:active{transform:scale(.97)}
-
-/* toggle */
+.tag-row{display:flex;flex-wrap:wrap;gap:8px}
+.tag{padding:8px 14px;border-radius:20px;font-size:14px;border:1.5px solid var(--border2);background:var(--bg);color:var(--ink2);cursor:pointer;user-select:none;min-height:38px;display:inline-flex;align-items:center;transition:all .12s}
+.tag.active{background:var(--accent);border-color:var(--accent);color:#fff}
 .toggle-row{display:flex;align-items:center;gap:14px;padding:4px 0}
 .toggle{width:50px;height:28px;background:var(--surface2);border-radius:14px;cursor:pointer;position:relative;transition:background .2s;border:1.5px solid var(--border2);flex-shrink:0}
 .toggle::after{content:'';width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .toggle.on{background:var(--accent);border-color:var(--accent)}
 .toggle.on::after{transform:translateX(22px)}
-
-/* simple tags (begl) */
-.tag-row{display:flex;flex-wrap:wrap;gap:8px}
-.tag{padding:8px 14px;border-radius:20px;font-size:14px;border:1.5px solid var(--border2);background:var(--bg);color:var(--ink2);cursor:pointer;user-select:none;min-height:38px;display:inline-flex;align-items:center;transition:all .12s}
-.tag.active{background:var(--accent);border-color:var(--accent);color:#fff}
-
-/* buttons */
 .btn-p{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:16px;font-family:var(--sans);font-size:16px;font-weight:600;cursor:pointer;min-height:54px;-webkit-appearance:none;transition:opacity .15s}
 .btn-p:active{opacity:.85}.btn-p:disabled{opacity:.5}
 .btn-s{width:100%;background:transparent;color:var(--ink2);border:1.5px solid var(--border2);border-radius:var(--r);padding:14px;font-family:var(--sans);font-size:15px;cursor:pointer;min-height:50px;-webkit-appearance:none}
 .form-actions{display:flex;flex-direction:column;gap:10px;margin-top:4px}
-
-/* toast */
 .toast{position:fixed;top:16px;left:16px;right:16px;background:var(--ink);color:#fff;padding:14px 18px;border-radius:var(--r);font-size:14px;font-weight:500;opacity:0;transform:translateY(-8px);transition:all .25s;pointer-events:none;z-index:999;text-align:center}
 .toast.show{opacity:1;transform:translateY(0)}
 .toast.err{background:var(--red)}
-
-/* entries */
 .search-bar{display:flex;gap:10px;margin-bottom:12px}
 .search-input{flex:1;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 14px;font-family:var(--sans);font-size:16px;color:var(--ink);outline:none;-webkit-appearance:none}
 .search-input:focus{border-color:var(--accent)}
@@ -119,10 +100,20 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 .b-r{background:var(--red-l);color:var(--red)}
 .b-y{background:var(--yel-l);color:#8A6A00}
 .b-gr{background:var(--surface2);color:var(--ink3)}
-.del-btn{background:none;border:none;color:var(--ink3);font-size:18px;cursor:pointer;padding:4px 8px;border-radius:8px}
-.del-btn:active{background:var(--red-l);color:var(--red)}
-
-/* analyse */
+.b-p{background:#EDE9FE;color:#5B21B6}
+.ec-actions{display:flex;gap:6px}
+.ec-btn{background:none;border:none;font-size:17px;cursor:pointer;padding:4px 8px;border-radius:8px;color:var(--ink3)}
+.ec-btn.edit:active{background:var(--accent-l);color:var(--accent)}
+.ec-btn.del:active{background:var(--red-l);color:var(--red)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;align-items:flex-end}
+.modal-overlay.open{display:flex}
+.modal-sheet{background:var(--bg);border-radius:24px 24px 0 0;width:100%;max-height:92dvh;overflow-y:auto;padding:0 0 calc(var(--safe-b) + 16px);animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 0}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 8px}
+.modal-title{font-size:17px;font-weight:600;letter-spacing:-.02em}
+.modal-close{background:var(--surface2);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:var(--ink2)}
+.modal-body{padding:0 16px}
 .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px}
 .stat-label{font-size:11px;color:var(--ink3);font-weight:500;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
@@ -136,45 +127,45 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 </style>
 </head>
 <body>
-
 <div class="top-bar">
   <div class="top-bar-title" id="top-title">Neue Konsultation</div>
   <div class="top-bar-sub" id="entry-count">— Einträge</div>
 </div>
-
 <main class="main">
-
-  <!-- ERFASSEN -->
   <div class="page active" id="page-erfassen">
     <form id="entry-form" autocomplete="off">
-
       <div class="card">
         <div class="card-title">Zeitpunkt & Dauer</div>
         <div class="two-col">
           <div class="field"><label>Datum & Zeit</label><input type="datetime-local" id="f-datum"></div>
-          <div class="field"><label>Dauer (min) *</label><input type="number" id="f-dauer" min="1" max="180" placeholder="15" required inputmode="numeric"></div>
+          <div class="field"><label>Dauer (min)</label><input type="number" id="f-dauer" min="1" max="180" placeholder="10" inputmode="numeric"></div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">Alter des Patienten</div>
         <div class="three-col">
-          <div class="field"><label>Jahre</label><input type="number" id="f-alter-j" min="0" max="18" placeholder="0" oninput="calcAge()" inputmode="numeric"></div>
-          <div class="field"><label>Monate</label><input type="number" id="f-alter-m" min="0" max="11" placeholder="0" oninput="calcAge()" inputmode="numeric"></div>
-          <div class="field"><label>Ergebnis</label><div class="age-display" id="age-display">—</div></div>
+          <div class="field"><label>Jahre</label><input type="number" id="f-alter-j" min="0" max="18" placeholder="0" oninput="calcAge('f')" inputmode="numeric"></div>
+          <div class="field"><label>Monate</label><input type="number" id="f-alter-m" min="0" max="11" placeholder="0" oninput="calcAge('f')" inputmode="numeric"></div>
+          <div class="field"><label>Ergebnis</label><div class="age-display" id="f-age-display">—</div></div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">Konsultationsgrund *</div>
-        <div class="tag-picker" id="picker-grund"></div>
+        <div id="picker-grund"></div>
       </div>
-
       <div class="card">
         <div class="card-title">Maßnahmen</div>
-        <div class="tag-picker" id="picker-mass"></div>
+        <div id="picker-mass"></div>
       </div>
-
+      <div class="card">
+        <div class="collapsible-header" onclick="toggleCollapsible(this)">
+          <span class="ch-title">Diagnose</span>
+          <span class="collapsible-arrow">▼</span>
+        </div>
+        <div class="collapsible-body">
+          <div class="collapsible-inner"><div id="picker-diag"></div></div>
+        </div>
+      </div>
       <div class="card">
         <div class="card-title">Begleitperson</div>
         <div class="tag-row" id="begl-tags">
@@ -185,7 +176,6 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
           <span class="tag" onclick="toggleSingle(this,'begl-tags')">Keine</span>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">Migrationshintergrund</div>
         <div class="toggle-row">
@@ -193,20 +183,16 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
           <span id="mig-label">Nein</span>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">Notizen</div>
         <div class="field" style="margin-bottom:0"><textarea id="f-notizen" placeholder="Freie Anmerkungen…"></textarea></div>
       </div>
-
       <div class="form-actions">
         <button type="submit" class="btn-p" id="submit-btn">Speichern</button>
         <button type="button" class="btn-s" onclick="resetForm()">Zurücksetzen</button>
       </div>
     </form>
   </div>
-
-  <!-- EINTRÄGE -->
   <div class="page" id="page-tabelle">
     <div class="search-bar">
       <input class="search-input" type="text" id="search-input" placeholder="Suchen…" oninput="searchEntries()">
@@ -214,14 +200,10 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
     </div>
     <div id="table-container"><div class="loading">Wird geladen…</div></div>
   </div>
-
-  <!-- ANALYSE -->
   <div class="page" id="page-analyse">
     <div id="analyse-container"><div class="loading">Wird geladen…</div></div>
   </div>
-
 </main>
-
 <nav class="bottom-nav">
   <button class="nav-btn active" id="nav-erfassen" onclick="showPage('erfassen',this)">
     <span class="nav-icon">✚</span><span>Erfassen</span><div class="nav-dot"></div>
@@ -233,276 +215,272 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
     <span class="nav-icon">◎</span><span>Analyse</span><div class="nav-dot"></div>
   </button>
 </nav>
-
+<!-- Edit Modal -->
+<div class="modal-overlay" id="edit-modal" onclick="maybeCloseModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">Eintrag bearbeiten</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="edit-form" autocomplete="off">
+        <input type="hidden" id="edit-id">
+        <div class="card">
+          <div class="card-title">Zeitpunkt & Dauer</div>
+          <div class="two-col">
+            <div class="field"><label>Datum & Zeit</label><input type="datetime-local" id="e-datum"></div>
+            <div class="field"><label>Dauer (min)</label><input type="number" id="e-dauer" min="1" max="180" inputmode="numeric"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Alter</div>
+          <div class="three-col">
+            <div class="field"><label>Jahre</label><input type="number" id="e-alter-j" min="0" max="18" inputmode="numeric" oninput="calcAge('e')"></div>
+            <div class="field"><label>Monate</label><input type="number" id="e-alter-m" min="0" max="11" inputmode="numeric" oninput="calcAge('e')"></div>
+            <div class="field"><label>Ergebnis</label><div class="age-display" id="e-age-display">—</div></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-title">Konsultationsgrund</div><div id="e-picker-grund"></div></div>
+        <div class="card"><div class="card-title">Maßnahmen</div><div id="e-picker-mass"></div></div>
+        <div class="card">
+          <div class="collapsible-header" onclick="toggleCollapsible(this)">
+            <span class="ch-title">Diagnose</span><span class="collapsible-arrow">▼</span>
+          </div>
+          <div class="collapsible-body"><div class="collapsible-inner"><div id="e-picker-diag"></div></div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Begleitperson</div>
+          <div class="tag-row" id="e-begl-tags">
+            <span class="tag" onclick="toggleSingle(this,'e-begl-tags')">Mama</span>
+            <span class="tag" onclick="toggleSingle(this,'e-begl-tags')">Papa</span>
+            <span class="tag" onclick="toggleSingle(this,'e-begl-tags')">Beide</span>
+            <span class="tag" onclick="toggleSingle(this,'e-begl-tags')">Andere</span>
+            <span class="tag" onclick="toggleSingle(this,'e-begl-tags')">Keine</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Migrationshintergrund</div>
+          <div class="toggle-row">
+            <div class="toggle" id="e-mig-toggle" onclick="this.classList.toggle('on');document.getElementById('e-mig-label').textContent=this.classList.contains('on')?'Ja':'Nein'"></div>
+            <span id="e-mig-label">Nein</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Notizen</div>
+          <div class="field" style="margin-bottom:0"><textarea id="e-notizen" placeholder="Freie Anmerkungen…"></textarea></div>
+        </div>
+        <div class="form-actions" style="padding-bottom:8px">
+          <button type="submit" class="btn-p" id="edit-save-btn">Änderungen speichern</button>
+          <button type="button" class="btn-s" onclick="closeModal()">Abbrechen</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
-
 <script>
-// ── State ─────────────────────────────────────────────────────────────────────
-const API = '';
-let vorschlaege = { grund: { top:[], alle:[] }, massnahmen: { top:[], alle:[] } };
-let pickers = {};
-let searchTimer = null;
-let chartInstances = {};
+const API='';
+let vorschlaege={grund:{top:[],alle:[]},diagnose:{top:[],alle:[]},massnahmen:{top:[],alle:[]}};
+let pickers={};
+let searchTimer=null,chartInstances={};
+const DEFAULTS={
+  grund:['Fieber','Husten','Impfung','Bauchschmerzen','Schnupfen','Erbrechen','Schlaf','Sprache','Hörtest','Hyposensibilisierung','U3','U4','U5','U6','U7','U8','U9','U10','BE Kontrolle','Überweisung'],
+  diagnose:['URTI','Otitis media','Bronchitis','Gastroenteritis','Exanthem','Fieber unklarer Genese','Impfreaktion','Entwicklungsverzögerung','Adipositas','Allergische Rhinitis','Asthma','Atopisches Ekzem'],
+  massnahmen:['Beratung','Ausschluss','Keine','ATB','Creme','Ibuprofen','Paracetamol','Blutentnahme','Nasentropfen','Kontrolle','Schädelsono','Salbutamol','Überweisung','Impfung']
+};
 
-// ── TagPicker class ───────────────────────────────────────────────────────────
-class TagPicker {
-  constructor(containerId, type) {
-    this.container = document.getElementById(containerId);
-    this.type = type;       // 'grund' | 'massnahmen'
-    this.selected = new Set();
-    this.render();
+class TagPicker{
+  constructor(cid,type){this.el=document.getElementById(cid);this.type=type;this.selected=new Set();this._render();}
+  get data(){return vorschlaege[this.type];}
+  get defs(){return DEFAULTS[this.type]||[];}
+  _topList(){return this.data.top.length?this.data.top:this.defs.slice(0,10);}
+  _allList(){return [...new Set([...(this.data.alle.length?this.data.alle:this.defs),...this.defs])];}
+  _render(){
+    const uid=this.el.id;
+    this.el.innerHTML=`<div class="tp-chips" id="${uid}-c"></div><div class="tp-input-row"><input class="tp-input" id="${uid}-i" type="text" placeholder="Suchen oder neu…" autocomplete="off"><button type="button" class="tp-add-btn" id="${uid}-a" disabled>+</button><div class="tp-dd" id="${uid}-d"></div></div><div class="tp-top-label">Schnellauswahl</div><div class="tp-top-tags" id="${uid}-t"></div>`;
+    this.chipsEl=document.getElementById(`${uid}-c`);this.inpEl=document.getElementById(`${uid}-i`);
+    this.addBtn=document.getElementById(`${uid}-a`);this.ddEl=document.getElementById(`${uid}-d`);this.topEl=document.getElementById(`${uid}-t`);
+    this.inpEl.addEventListener('input',()=>this._onInput());
+    this.inpEl.addEventListener('focus',()=>this._onInput());
+    this.inpEl.addEventListener('blur',()=>setTimeout(()=>this._closeDD(),180));
+    this.addBtn.addEventListener('click',()=>this._addCustom());
+    this._renderTop();
   }
-
-  get data() { return vorschlaege[this.type === 'grund' ? 'grund' : 'massnahmen']; }
-
-  render() {
-    this.container.innerHTML = `
-      <div id="${this.type}-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:${0}px"></div>
-      <div class="tp-input-row">
-        <input class="tp-input" id="${this.type}-input" type="text" placeholder="Suchen oder neu eingeben…" autocomplete="off" inputmode="text">
-        <button type="button" class="tp-add-btn" id="${this.type}-addbtn" disabled>+ Hinzufügen</button>
-        <div class="tp-dropdown" id="${this.type}-dd"></div>
-      </div>
-      <div class="tp-top-label">Häufig verwendet</div>
-      <div class="tp-top-tags" id="${this.type}-top"></div>
-    `;
-    this.chipsEl = document.getElementById(`${this.type}-chips`);
-    this.inputEl = document.getElementById(`${this.type}-input`);
-    this.addBtn  = document.getElementById(`${this.type}-addbtn`);
-    this.ddEl    = document.getElementById(`${this.type}-dd`);
-    this.topEl   = document.getElementById(`${this.type}-top`);
-
-    this.inputEl.addEventListener('input', () => this._onInput());
-    this.inputEl.addEventListener('focus', () => this._onInput());
-    this.inputEl.addEventListener('blur', () => setTimeout(() => this._closeDD(), 180));
-    this.addBtn.addEventListener('click', () => this._addCustom());
-    this.renderTop();
-  }
-
-  renderTop() {
-    const top = this.data.top.length
-      ? this.data.top
-      : ['Fieber','Husten','Impfung','Bauchschmerzen','Schlaf','U3','U4','U5','U6','U7','U8','U9','U10','Beratung','Ausschluss','Keine','ATB','Creme','Ibuprofen','Blutentnahme'].slice(0, this.type === 'grund' ? 20 : 14);
-
-    this.topEl.innerHTML = top.map(v => {
-      const sel = this.selected.has(v);
-      return `<span class="tp-tag${sel?' active':''}" data-v="${v}" onclick="pickers['${this.type}'].toggleTop(this,'${v}')">${v}</span>`;
-    }).join('');
-  }
-
-  toggleTop(el, val) {
-    if (this.selected.has(val)) {
-      this.selected.delete(val);
-      el.classList.remove('active');
-    } else {
-      this.selected.add(val);
-      el.classList.add('active');
-    }
-    this._renderChips();
-  }
-
-  _renderChips() {
-    if (this.selected.size === 0) {
-      this.chipsEl.style.marginBottom = '0';
-      this.chipsEl.innerHTML = '';
-      return;
-    }
-    this.chipsEl.style.marginBottom = '10px';
-    this.chipsEl.innerHTML = [...this.selected].map(v =>
-      `<span class="tp-chip">${v}<button type="button" class="tp-chip-x" onclick="pickers['${this.type}'].remove('${v}')">×</button></span>`
-    ).join('');
-  }
-
-  remove(val) {
-    this.selected.delete(val);
-    this._renderChips();
-    this.renderTop();
-  }
-
-  _onInput() {
-    const q = this.inputEl.value.trim();
-    this.addBtn.disabled = q.length === 0;
-    const all = this.data.alle.length
-      ? this.data.alle
-      : ['Fieber','Husten','Impfung','Bauchschmerzen','Schnupfen','Erbrechen','Schlaf','Sprache','Hörtest','Hyposensibilisierung',
-         'U3','U4','U5','U6','U7','U8','U9','U10','U11','BE Kontrolle','Überweisung',
-         'Beratung','Ausschluss','Keine','ATB','Creme','Ibuprofen','Paracetamol','Blutentnahme','Nasentropfen','Kontrolle','Schädelsono','Salbutamol'];
-    if (!q) { this._closeDD(); return; }
-    const matches = all.filter(v => v.toLowerCase().includes(q.toLowerCase()) && !this.selected.has(v)).slice(0, 8);
-    if (matches.length === 0) { this._closeDD(); return; }
-    this.ddEl.innerHTML = matches.map(v => {
-      const hi = v.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
-      return `<div class="tp-option" onmousedown="pickers['${this.type}'].selectDD('${v}')">${hi}</div>`;
-    }).join('');
+  _renderTop(){this.topEl.innerHTML=this._topList().map(v=>`<span class="tp-tag${this.selected.has(v)?' active':''}" onclick="TP.tog('${this.el.id}','${v.replace(/'/g,"\\'")}')">  ${v}</span>`).join('');}
+  _renderChips(){this.chipsEl.innerHTML=[...this.selected].map(v=>`<span class="tp-chip">${v}<button type="button" class="tp-chip-x" onclick="TP.rem('${this.el.id}','${v.replace(/'/g,"\\'")}')">×</button></span>`).join('');}
+  _onInput(){
+    const q=this.inpEl.value.trim();this.addBtn.disabled=q.length===0;
+    if(!q){this._closeDD();return;}
+    const esc=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const m=this._allList().filter(v=>v.toLowerCase().includes(q.toLowerCase())&&!this.selected.has(v)).slice(0,8);
+    if(!m.length){this._closeDD();return;}
+    this.ddEl.innerHTML=m.map(v=>`<div class="tp-option" onmousedown="TP.sel('${this.el.id}','${v.replace(/'/g,"\\'")}')"> ${v.replace(new RegExp(`(${esc})`,'gi'),'<mark>$1</mark>')}</div>`).join('');
     this.ddEl.classList.add('open');
   }
-
-  selectDD(val) {
-    this.selected.add(val);
-    this.inputEl.value = '';
-    this.addBtn.disabled = true;
-    this._closeDD();
-    this._renderChips();
-    this.renderTop();
-    // Add to alle if new
-    if (!this.data.alle.includes(val)) this.data.alle.unshift(val);
-  }
-
-  _addCustom() {
-    const val = this.inputEl.value.trim();
-    if (!val) return;
-    this.selectDD(val);
-  }
-
-  _closeDD() {
-    this.ddEl.classList.remove('open');
-    this.ddEl.innerHTML = '';
-  }
-
-  getValues() { return [...this.selected]; }
-
-  reset() {
-    this.selected.clear();
-    this.inputEl.value = '';
-    this.addBtn.disabled = true;
-    this._closeDD();
-    this._renderChips();
-    this.renderTop();
-  }
-
-  refreshTop(newData) {
-    // merge new data
-    if (newData) {
-      this.data.top = newData.top;
-      newData.alle.forEach(v => { if (!this.data.alle.includes(v)) this.data.alle.push(v); });
-    }
-    this.renderTop();
-  }
+  _select(val){this.selected.add(val);this.inpEl.value='';this.addBtn.disabled=true;this._closeDD();this._renderChips();this._renderTop();if(!this.data.alle.includes(val))this.data.alle.unshift(val);}
+  _addCustom(){const v=this.inpEl.value.trim();if(v)this._select(v);}
+  _closeDD(){this.ddEl.classList.remove('open');this.ddEl.innerHTML='';}
+  getValues(){return[...this.selected];}
+  setValues(vals){this.selected=new Set(vals||[]);this._renderChips();this._renderTop();}
+  reset(){this.selected.clear();this._renderChips();this._renderTop();this.inpEl.value='';this.addBtn.disabled=true;this._closeDD();}
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
-async function init() {
-  initDatetime();
-  updateCount();
-  try {
-    const res = await fetch(`${API}/api/vorschlaege`);
-    vorschlaege = await res.json();
-  } catch {}
-  pickers.grund = new TagPicker('picker-grund', 'grund');
-  pickers.massnahmen = new TagPicker('picker-mass', 'massnahmen');
+const TP={
+  _find:uid=>Object.values(pickers).find(p=>p.el.id===uid),
+  tog:(uid,val)=>{const p=TP._find(uid);if(!p)return;p.selected.has(val)?p.selected.delete(val):p.selected.add(val);p._renderChips();p._renderTop();},
+  rem:(uid,val)=>{const p=TP._find(uid);if(!p)return;p.selected.delete(val);p._renderChips();p._renderTop();},
+  sel:(uid,val)=>{const p=TP._find(uid);if(p)p._select(val);}
+};
+
+function toggleCollapsible(h){h.classList.toggle('open');h.nextElementSibling.classList.toggle('open');}
+
+async function init(){
+  initDatetime();updateCount();
+  try{const r=await fetch(`${API}/api/vorschlaege`);vorschlaege=await r.json();}catch{}
+  pickers['grund']=new TagPicker('picker-grund','grund');
+  pickers['mass']=new TagPicker('picker-mass','massnahmen');
+  pickers['diag']=new TagPicker('picker-diag','diagnose');
 }
 
-function initDatetime() {
-  const now = new Date();
-  const p = n => String(n).padStart(2,'0');
-  document.getElementById('f-datum').value =
-    `${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}T${p(now.getHours())}:${p(now.getMinutes())}`;
+function initDatetime(){
+  const now=new Date(),p=n=>String(n).padStart(2,'0');
+  document.getElementById('f-datum').value=`${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}T${p(now.getHours())}:${p(now.getMinutes())}`;
+  document.getElementById('f-dauer').value=10;
 }
 
-// ── Nav ───────────────────────────────────────────────────────────────────────
-const pageTitles = { erfassen:'Neue Konsultation', tabelle:'Einträge', analyse:'Analyse' };
-function showPage(id, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+const pageTitles={erfassen:'Neue Konsultation',tabelle:'Einträge',analyse:'Analyse'};
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   (btn||document.getElementById('nav-'+id)).classList.add('active');
-  document.getElementById('top-title').textContent = pageTitles[id];
-  if (id==='tabelle') loadTable();
-  if (id==='analyse') loadAnalyse();
+  document.getElementById('top-title').textContent=pageTitles[id];
+  if(id==='tabelle')loadTable();
+  if(id==='analyse')loadAnalyse();
 }
 
-// ── Form helpers ──────────────────────────────────────────────────────────────
-function calcAge() {
-  const j=parseInt(document.getElementById('f-alter-j').value)||0;
-  const m=parseInt(document.getElementById('f-alter-m').value)||0;
+function calcAge(pfx){
+  const j=parseInt(document.getElementById(`${pfx}-alter-j`).value)||0;
+  const m=parseInt(document.getElementById(`${pfx}-alter-m`).value)||0;
   const t=j*12+m;
-  document.getElementById('age-display').textContent = t>0
-    ? (j>0?`${j}J ${m}M`:`${m} Mo.`)+` · ${t}Mo.` : '—';
+  document.getElementById(`${pfx}-age-display`).textContent=t>0?(j>0?`${j}J ${m}M`:`${m} Mo.`)+` · ${t}Mo.`:'—';
 }
+function toggleSingle(el,gid){document.querySelectorAll(`#${gid} .tag`).forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+function getActive(gid){return Array.from(document.querySelectorAll(`#${gid} .tag.active`)).map(t=>t.textContent.trim());}
+function setActive(gid,val){document.querySelectorAll(`#${gid} .tag`).forEach(t=>t.classList.toggle('active',t.textContent.trim()===val));}
 
-function toggleSingle(el, groupId) {
-  document.querySelectorAll(`#${groupId} .tag`).forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function getActive(groupId) {
-  return Array.from(document.querySelectorAll(`#${groupId} .tag.active`)).map(t=>t.textContent.trim());
-}
-
-function resetForm() {
+function resetForm(){
   document.getElementById('entry-form').reset();
   document.querySelectorAll('#begl-tags .tag').forEach(t=>t.classList.remove('active'));
   document.getElementById('mig-toggle').classList.remove('on');
   document.getElementById('mig-label').textContent='Nein';
-  document.getElementById('age-display').textContent='—';
-  pickers.grund?.reset();
-  pickers.massnahmen?.reset();
+  document.getElementById('f-age-display').textContent='—';
+  pickers['grund']?.reset();pickers['mass']?.reset();pickers['diag']?.reset();
   initDatetime();
 }
 
-// ── Submit ────────────────────────────────────────────────────────────────────
-document.getElementById('entry-form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const grund = pickers.grund.getValues();
-  if (!grund.length) { showToast('Bitte Konsultationsgrund angeben', true); return; }
-  const mass = pickers.massnahmen.getValues();
-  const j=parseInt(document.getElementById('f-alter-j').value)||0;
-  const m=parseInt(document.getElementById('f-alter-m').value)||0;
-
-  const payload = {
-    datum: document.getElementById('f-datum').value||null,
-    alter_j:j, alter_m:m, alter_ges:j*12+m,
-    dauer: parseInt(document.getElementById('f-dauer').value)||null,
-    grund, massnahmen: mass,
-    begleitperson: getActive('begl-tags')[0]||'',
-    mh: document.getElementById('mig-toggle').classList.contains('on'),
-    notizen: document.getElementById('f-notizen').value.trim()
-  };
-
-  const btn=document.getElementById('submit-btn');
-  btn.disabled=true; btn.textContent='Speichert…';
-  try {
-    const res = await fetch(`${API}/api/konsultationen`, {
-      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
-    });
-    if (!res.ok) throw new Error();
-    // refresh suggestions after save
-    const vres = await fetch(`${API}/api/vorschlaege`);
-    vorschlaege = await vres.json();
-    resetForm();
-    showToast('✓ Gespeichert');
-    updateCount();
-  } catch { showToast('Fehler beim Speichern', true); }
-  finally { btn.disabled=false; btn.textContent='Speichern'; }
-});
-
-// ── Einträge ──────────────────────────────────────────────────────────────────
-async function loadTable(q='') {
-  const c=document.getElementById('table-container');
-  try {
-    const res=await fetch(`${API}/api/konsultationen${q?'?q='+encodeURIComponent(q):''}`);
-    const data=await res.json();
-    if (!data.length) { c.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>Noch keine Einträge.</div>'; return; }
-    c.innerHTML=data.map(cardHtml).join('');
-  } catch { c.innerHTML='<div class="empty-state">Fehler beim Laden.</div>'; }
+async function refreshVorschlaege(){
+  try{const r=await fetch(`${API}/api/vorschlaege`);vorschlaege=await r.json();Object.values(pickers).forEach(p=>p._renderTop());}catch{}
 }
 
-function cardHtml(e) {
-  const d=e.datum?new Date(e.datum):null;
-  const p=n=>String(n).padStart(2,'0');
+document.getElementById('entry-form').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const grund=pickers['grund'].getValues();
+  if(!grund.length){showToast('Bitte Konsultationsgrund angeben',true);return;}
+  const j=parseInt(document.getElementById('f-alter-j').value)||0;
+  const m=parseInt(document.getElementById('f-alter-m').value)||0;
+  const payload={datum:document.getElementById('f-datum').value||null,alter_j:j,alter_m:m,alter_ges:j*12+m,
+    dauer:parseInt(document.getElementById('f-dauer').value)||10,grund,
+    diagnose:pickers['diag'].getValues(),massnahmen:pickers['mass'].getValues(),
+    begleitperson:getActive('begl-tags')[0]||'',
+    mh:document.getElementById('mig-toggle').classList.contains('on'),
+    notizen:document.getElementById('f-notizen').value.trim()};
+  const btn=document.getElementById('submit-btn');btn.disabled=true;btn.textContent='Speichert…';
+  try{
+    const r=await fetch(`${API}/api/konsultationen`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!r.ok)throw new Error();
+    await refreshVorschlaege();resetForm();showToast('✓ Gespeichert');updateCount();
+  }catch{showToast('Fehler beim Speichern',true);}
+  finally{btn.disabled=false;btn.textContent='Speichern';}
+});
+
+function openEditModal(entry){
+  if(!pickers['e-grund']){
+    pickers['e-grund']=new TagPicker('e-picker-grund','grund');
+    pickers['e-mass']=new TagPicker('e-picker-mass','massnahmen');
+    pickers['e-diag']=new TagPicker('e-picker-diag','diagnose');
+  }
+  document.getElementById('edit-id').value=entry.id;
+  const dt=entry.datum?entry.datum.replace(' ','T').slice(0,16):'';
+  document.getElementById('e-datum').value=dt;
+  document.getElementById('e-dauer').value=entry.dauer||10;
+  document.getElementById('e-alter-j').value=entry.alter_j||0;
+  document.getElementById('e-alter-m').value=entry.alter_m||0;
+  calcAge('e');
+  pickers['e-grund'].setValues(entry.grund||[]);
+  pickers['e-mass'].setValues(entry.massnahmen||[]);
+  pickers['e-diag'].setValues(entry.diagnose||[]);
+  setActive('e-begl-tags',entry.begleitperson||'');
+  document.getElementById('e-mig-toggle').classList.toggle('on',!!entry.mh);
+  document.getElementById('e-mig-label').textContent=entry.mh?'Ja':'Nein';
+  document.getElementById('e-notizen').value=entry.notizen||'';
+  document.getElementById('edit-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){document.getElementById('edit-modal').classList.remove('open');document.body.style.overflow='';}
+function maybeCloseModal(e){if(e.target===document.getElementById('edit-modal'))closeModal();}
+
+document.getElementById('edit-form').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const id=parseInt(document.getElementById('edit-id').value);
+  const j=parseInt(document.getElementById('e-alter-j').value)||0;
+  const m=parseInt(document.getElementById('e-alter-m').value)||0;
+  const payload={datum:document.getElementById('e-datum').value||null,alter_j:j,alter_m:m,alter_ges:j*12+m,
+    dauer:parseInt(document.getElementById('e-dauer').value)||10,
+    grund:pickers['e-grund'].getValues(),diagnose:pickers['e-diag'].getValues(),
+    massnahmen:pickers['e-mass'].getValues(),begleitperson:getActive('e-begl-tags')[0]||'',
+    mh:document.getElementById('e-mig-toggle').classList.contains('on'),
+    notizen:document.getElementById('e-notizen').value.trim()};
+  const btn=document.getElementById('edit-save-btn');btn.disabled=true;btn.textContent='Speichert…';
+  try{
+    const r=await fetch(`${API}/api/konsultationen/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!r.ok)throw new Error();
+    await refreshVorschlaege();closeModal();
+    loadTable(document.getElementById('search-input')?.value||'');
+    showToast('✓ Gespeichert');updateCount();
+  }catch{showToast('Fehler beim Speichern',true);}
+  finally{btn.disabled=false;btn.textContent='Änderungen speichern';}
+});
+
+async function loadTable(q=''){
+  const c=document.getElementById('table-container');
+  try{
+    const r=await fetch(`${API}/api/konsultationen${q?'?q='+encodeURIComponent(q):''}`);
+    const data=await r.json();
+    if(!data.length){c.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>Noch keine Einträge.</div>';return;}
+    c.innerHTML=data.map(cardHtml).join('');
+  }catch{c.innerHTML='<div class="empty-state">Fehler beim Laden.</div>';}
+}
+
+function cardHtml(e){
+  const d=e.datum?new Date(e.datum):null,p=n=>String(n).padStart(2,'0');
   const dateStr=d?`${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`:'—';
   const ageStr=e.alter_ges>0?(e.alter_j>0?`${e.alter_j} J. ${e.alter_m} M.`:`${e.alter_m} Mo.`):'—';
-  const grundStr=(e.grund||[]).join(', ')||'—';
-  const massStr=(e.massnahmen||[]).join(', ')||'—';
+  const eJson=JSON.stringify(e).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
   return `<div class="entry-card">
     <div class="ec-header">
       <div><div class="ec-date">${dateStr}</div><div class="ec-age">${ageStr}</div></div>
-      <button class="del-btn" onclick="deleteEntry(${e.id})">✕</button>
+      <div class="ec-actions">
+        <button class="ec-btn edit" onclick='openEditModal(${eJson})'>✎</button>
+        <button class="ec-btn del" onclick="deleteEntry(${e.id})">✕</button>
+      </div>
     </div>
-    <div class="ec-grund">${grundStr}</div>
+    <div class="ec-grund">${(e.grund||[]).join(', ')||'—'}</div>
     <div class="ec-meta">
       <span class="badge b-y">${e.dauer??'—'} min</span>
-      ${massStr!=='—'?`<span class="badge b-g">${massStr}</span>`:''}
+      ${(e.massnahmen||[]).length?`<span class="badge b-g">${e.massnahmen.join(', ')}</span>`:''}
+      ${(e.diagnose||[]).length?`<span class="badge b-p">${e.diagnose.join(', ')}</span>`:''}
       ${e.begleitperson?`<span class="badge b-gr">${e.begleitperson}</span>`:''}
       ${e.mh?'<span class="badge b-r">MH</span>':''}
     </div>
@@ -510,59 +488,39 @@ function cardHtml(e) {
   </div>`;
 }
 
-function searchEntries() {
-  clearTimeout(searchTimer);
-  searchTimer=setTimeout(()=>loadTable(document.getElementById('search-input').value),300);
-}
+function searchEntries(){clearTimeout(searchTimer);searchTimer=setTimeout(()=>loadTable(document.getElementById('search-input').value),300);}
+async function deleteEntry(id){if(!confirm('Eintrag löschen?'))return;await fetch(`${API}/api/konsultationen/${id}`,{method:'DELETE'});loadTable(document.getElementById('search-input')?.value||'');updateCount();}
 
-async function deleteEntry(id) {
-  if (!confirm('Eintrag löschen?')) return;
-  await fetch(`${API}/api/konsultationen/${id}`,{method:'DELETE'});
-  loadTable(document.getElementById('search-input')?.value||'');
-  updateCount();
-}
-
-// ── Analyse ───────────────────────────────────────────────────────────────────
-async function loadAnalyse() {
+async function loadAnalyse(){
   const c=document.getElementById('analyse-container');
-  try {
-    const res=await fetch(`${API}/api/stats`);
-    const s=await res.json();
-    if (s.total===0) { c.innerHTML='<div class="empty-state"><div class="empty-icon">◎</div>Noch keine Daten.</div>'; return; }
-    c.innerHTML=`
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-label">Konsultationen</div><div class="stat-value">${s.total}</div></div>
-        <div class="stat-card"><div class="stat-label">Ø Dauer</div><div class="stat-value">${s.avg_dauer}<span style="font-size:15px;font-weight:400;color:var(--ink2)"> min</span></div></div>
-        <div class="stat-card"><div class="stat-label">Mit MH</div><div class="stat-value">${s.mh_pct}<span style="font-size:15px;font-weight:400;color:var(--ink2)">%</span></div><div class="stat-sub">${s.mh_count} von ${s.total}</div></div>
-        <div class="stat-card"><div class="stat-label">Häufigster Grund</div><div class="stat-value" style="font-size:16px;margin-top:2px">${s.top_grund||'—'}</div><div class="stat-sub">${s.top_grund_count?s.top_grund_count+'×':''}</div></div>
-      </div>
-      <div class="chart-card"><div class="chart-title">Altersverteilung</div><div style="position:relative;height:200px"><canvas id="ca"></canvas></div></div>
-      <div class="chart-card"><div class="chart-title">Häufigste Gründe</div><div style="position:relative;height:${Math.max(180,Object.keys(s.grund_counts).length*34+40)}px"><canvas id="cg"></canvas></div></div>
-      <div class="chart-card"><div class="chart-title">Dauer-Verteilung</div><div style="position:relative;height:200px"><canvas id="cd"></canvas></div></div>
-    `;
+  try{
+    const r=await fetch(`${API}/api/stats`);const s=await r.json();
+    if(s.total===0){c.innerHTML='<div class="empty-state"><div class="empty-icon">◎</div>Noch keine Daten.</div>';return;}
+    c.innerHTML=`<div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Konsultationen</div><div class="stat-value">${s.total}</div></div>
+      <div class="stat-card"><div class="stat-label">Ø Dauer</div><div class="stat-value">${s.avg_dauer}<span style="font-size:15px;font-weight:400;color:var(--ink2)"> min</span></div></div>
+      <div class="stat-card"><div class="stat-label">Mit MH</div><div class="stat-value">${s.mh_pct}<span style="font-size:15px;font-weight:400;color:var(--ink2)">%</span></div><div class="stat-sub">${s.mh_count} von ${s.total}</div></div>
+      <div class="stat-card"><div class="stat-label">Häufigster Grund</div><div class="stat-value" style="font-size:16px;margin-top:2px">${s.top_grund||'—'}</div><div class="stat-sub">${s.top_grund_count?s.top_grund_count+'×':''}</div></div>
+    </div>
+    <div class="chart-card"><div class="chart-title">Altersverteilung</div><div style="position:relative;height:200px"><canvas id="ca"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Häufigste Gründe</div><div style="position:relative;height:${Math.max(180,Object.keys(s.grund_counts).length*34+40)}px"><canvas id="cg"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Dauer-Verteilung</div><div style="position:relative;height:200px"><canvas id="cd"></canvas></div></div>`;
     const tc='#9E9889',gc='rgba(0,0,0,.06)';
-    Object.values(chartInstances).forEach(c=>c.destroy()); chartInstances={};
+    Object.values(chartInstances).forEach(c=>c.destroy());chartInstances={};
     chartInstances.a=new Chart(document.getElementById('ca'),{type:'bar',data:{labels:Object.keys(s.alter_dist),datasets:[{data:Object.values(s.alter_dist),backgroundColor:'#2A5C45',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true}}}});
     const tg=Object.entries(s.grund_counts).slice(0,10);
     chartInstances.g=new Chart(document.getElementById('cg'),{type:'bar',data:{labels:tg.map(g=>g[0]),datasets:[{data:tg.map(g=>g[1]),backgroundColor:'#5C8A2A',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true},y:{ticks:{color:tc,font:{size:10}},grid:{color:'transparent'}}}}});
     chartInstances.d=new Chart(document.getElementById('cd'),{type:'bar',data:{labels:Object.keys(s.dauer_buckets),datasets:[{data:Object.values(s.dauer_buckets),backgroundColor:'#C94B1E',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true}}}});
-  } catch { c.innerHTML='<div class="empty-state">Fehler beim Laden.</div>'; }
+  }catch{c.innerHTML='<div class="empty-state">Fehler beim Laden.</div>';}
 }
 
-// ── Utils ─────────────────────────────────────────────────────────────────────
-async function updateCount() {
-  try {
-    const res=await fetch(`${API}/api/stats`);
-    const s=await res.json();
-    document.getElementById('entry-count').textContent=s.total+(s.total===1?' Eintrag':' Einträge');
-  } catch {}
+async function updateCount(){
+  try{const r=await fetch(`${API}/api/stats`);const s=await r.json();document.getElementById('entry-count').textContent=s.total+(s.total===1?' Eintrag':' Einträge');}catch{}
 }
-function showToast(msg,isErr=false) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast'+(isErr?' err':'')+' show';
+function showToast(msg,isErr=false){
+  const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(isErr?' err':'')+' show';
   setTimeout(()=>t.classList.remove('show'),2500);
 }
-
 init();
 </script>
 </body>
