@@ -16,9 +16,9 @@
   --ink:#1A1814;--ink2:#6B6659;--ink3:#9E9889;
   --accent:#2A5C45;--accent-l:#D6EAE0;
   --red:#C94B1E;--red-l:#FAEAE3;
-  --yel-l:#FDF4DC;
   --purple:#6B3FA0;--purple-l:#EDE5F7;
-  --teal:#0E6B6B;--teal-l:#E0F2F2;
+  --teal:#0F6E6E;--teal-l:#D6EEEE;
+  --yel-l:#FDF4DC;
   --nav-h:64px;--safe-b:env(safe-area-inset-bottom,0px);
   --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;
   --r:12px;--rl:18px;
@@ -47,28 +47,24 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .age-display{background:var(--surface2);border-radius:var(--r);padding:13px 14px;font-family:var(--mono);font-size:13px;color:var(--ink2);min-height:50px;display:flex;align-items:center}
-
 /* collapsible */
 .coll-hdr{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
 .coll-hdr .card-title{margin-bottom:0}
-.coll-arrow{font-size:12px;color:var(--ink3);transition:transform .2s;flex-shrink:0}
+.coll-arrow{font-size:12px;color:var(--ink3);transition:transform .2s}
 .coll-hdr.open .coll-arrow{transform:rotate(180deg)}
 .coll-body{display:none;margin-top:14px}
 .coll-body.open{display:block}
-
-/* sub-sections */
+/* vorsorge */
+.vorsorge-card{background:var(--surface);border-radius:var(--rl);border:2px solid var(--teal);padding:16px;margin-bottom:12px;display:none}
+.vorsorge-card.visible{display:block}
+.vorsorge-badge{display:inline-flex;align-items:center;gap:6px;background:var(--teal-l);color:var(--teal);font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:6px;margin-bottom:12px}
+/* sub sections */
+.sub-section{margin-bottom:16px}
+.sub-section:last-child{margin-bottom:0}
 .sub-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;padding:4px 8px;border-radius:6px;display:inline-block}
 .sub-label.akut{background:var(--red-l);color:var(--red)}
 .sub-label.dauer{background:var(--purple-l);color:var(--purple)}
-.sub-label.fragen{background:var(--teal-l);color:var(--teal)}
 .sub-divider{border:none;border-top:1px solid var(--border);margin:14px 0}
-
-/* Vorsorge-Fragen card — hidden by default */
-.vorsorge-card{background:var(--teal-l);border:1.5px solid var(--teal);border-radius:var(--rl);padding:16px;margin-bottom:12px;display:none}
-.vorsorge-card.visible{display:block}
-.vorsorge-card .card-title{color:var(--teal)}
-.vorsorge-badge{display:inline-flex;align-items:center;gap:6px;background:var(--teal);color:#fff;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;margin-bottom:12px}
-
 /* tag picker */
 .tp-input-row{display:flex;gap:8px;margin-bottom:10px;position:relative}
 .tp-input{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 14px;font-family:var(--sans);font-size:16px;color:var(--ink);outline:none;-webkit-appearance:none;transition:border-color .15s}
@@ -84,7 +80,9 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 .tp-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
 .tp-chips:empty{display:none}
 .tp-chip{display:inline-flex;align-items:center;gap:5px;background:var(--accent);color:#fff;border-radius:20px;padding:7px 12px;font-size:14px}
-.tp-chip.akut{background:var(--red)}.tp-chip.dauer{background:var(--purple)}.tp-chip.fragen{background:var(--teal)}
+.tp-chip.akut{background:var(--red)}
+.tp-chip.dauer{background:var(--purple)}
+.tp-chip.vorsorge{background:var(--teal)}
 .tp-chip-x{background:none;border:none;color:rgba(255,255,255,.75);font-size:16px;cursor:pointer;line-height:1;padding:0}
 .tp-top-label{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;font-weight:500}
 .tp-top-tags{display:flex;flex-wrap:wrap;gap:7px}
@@ -92,26 +90,25 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 .tp-tag.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .tp-tag.on.akut{background:var(--red);border-color:var(--red)}
 .tp-tag.on.dauer{background:var(--purple);border-color:var(--purple)}
-.tp-tag.on.fragen{background:var(--teal);border-color:var(--teal)}
-
+.tp-tag.on.vorsorge{background:var(--teal);border-color:var(--teal)}
+/* multi-select tags (begleitperson) */
+.tag-row{display:flex;flex-wrap:wrap;gap:8px}
+.tag{padding:8px 14px;border-radius:20px;font-size:14px;border:1.5px solid var(--border2);background:var(--bg);color:var(--ink2);cursor:pointer;user-select:none;min-height:38px;display:inline-flex;align-items:center;transition:all .12s}
+.tag.on{background:var(--accent);border-color:var(--accent);color:#fff}
 /* toggle */
 .toggle-row{display:flex;align-items:center;gap:14px;padding:4px 0}
 .toggle{width:50px;height:28px;background:var(--surface2);border-radius:14px;cursor:pointer;position:relative;transition:background .2s;border:1.5px solid var(--border2);flex-shrink:0}
 .toggle::after{content:'';width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .toggle.on{background:var(--accent);border-color:var(--accent)}
 .toggle.on::after{transform:translateX(22px)}
-.tag-row{display:flex;flex-wrap:wrap;gap:8px}
-.tag{padding:8px 14px;border-radius:20px;font-size:14px;border:1.5px solid var(--border2);background:var(--bg);color:var(--ink2);cursor:pointer;user-select:none;min-height:38px;display:inline-flex;align-items:center;transition:all .12s}
-.tag.on{background:var(--accent);border-color:var(--accent);color:#fff}
-
 /* buttons */
 .btn-p{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:16px;font-family:var(--sans);font-size:16px;font-weight:600;cursor:pointer;min-height:54px;-webkit-appearance:none;transition:opacity .15s}
 .btn-p:active{opacity:.85}.btn-p:disabled{opacity:.5}
 .btn-s{width:100%;background:transparent;color:var(--ink2);border:1.5px solid var(--border2);border-radius:var(--r);padding:14px;font-family:var(--sans);font-size:15px;cursor:pointer;min-height:50px;-webkit-appearance:none}
 .form-actions{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+/* toast */
 .toast{position:fixed;top:16px;left:16px;right:16px;background:var(--ink);color:#fff;padding:14px 18px;border-radius:var(--r);font-size:14px;font-weight:500;opacity:0;transform:translateY(-8px);transition:all .25s;pointer-events:none;z-index:999;text-align:center}
 .toast.show{opacity:1;transform:translateY(0)}.toast.err{background:var(--red)}
-
 /* entry cards */
 .search-bar{display:flex;gap:10px;margin-bottom:12px}
 .search-input{flex:1;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 14px;font-family:var(--sans);font-size:16px;color:var(--ink);outline:none;-webkit-appearance:none}
@@ -123,13 +120,15 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 .ec-grund{font-size:15px;font-weight:500;margin-bottom:8px}
 .ec-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:10px;font-size:12px;font-weight:500}
-.b-g{background:var(--accent-l);color:var(--accent)}.b-r{background:var(--red-l);color:var(--red)}
-.b-p{background:var(--purple-l);color:var(--purple)}.b-t{background:var(--teal-l);color:var(--teal)}
-.b-y{background:var(--yel-l);color:#8A6A00}.b-gr{background:var(--surface2);color:var(--ink3)}
+.b-g{background:var(--accent-l);color:var(--accent)}
+.b-r{background:var(--red-l);color:var(--red)}
+.b-p{background:var(--purple-l);color:var(--purple)}
+.b-t{background:var(--teal-l);color:var(--teal)}
+.b-y{background:var(--yel-l);color:#8A6A00}
+.b-gr{background:var(--surface2);color:var(--ink3)}
 .ec-actions{display:flex;gap:8px;margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
 .btn-edit{flex:1;background:var(--surface2);border:none;border-radius:8px;padding:9px;font-family:var(--sans);font-size:13px;color:var(--ink2);cursor:pointer}
 .btn-del{flex:1;background:var(--red-l);border:none;border-radius:8px;padding:9px;font-family:var(--sans);font-size:13px;color:var(--red);cursor:pointer}
-
 /* modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:none;align-items:flex-end}
 .modal-overlay.open{display:flex}
@@ -138,17 +137,18 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 .modal-title{font-size:16px;font-weight:600;letter-spacing:-.02em;padding:0 18px 14px;border-bottom:1px solid var(--border)}
 .modal-body{padding:16px}
 .modal-actions{display:flex;flex-direction:column;gap:10px;padding:0 16px}
-
 /* analyse */
 .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px}
 .stat-label{font-size:11px;color:var(--ink3);font-weight:500;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
-.stat-value{font-size:26px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.stat-value{font-size:28px;font-weight:600;letter-spacing:-.03em;line-height:1}
 .stat-sub{font-size:11px;color:var(--ink2);margin-top:3px;font-family:var(--mono)}
 .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:12px}
-.chart-card.teal{border-color:var(--teal);background:var(--teal-l)}
+.chart-card.accent-teal{border-left:3px solid var(--teal)}
+.chart-card.accent-red{border-left:3px solid var(--red)}
+.chart-card.accent-purple{border-left:3px solid var(--purple)}
 .chart-title{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-bottom:14px}
-.chart-card.teal .chart-title{color:var(--teal)}
+.section-hdr{font-size:13px;font-weight:600;color:var(--ink2);margin:20px 0 10px;padding-left:2px}
 .empty-state{text-align:center;padding:60px 20px;color:var(--ink3);font-size:14px}
 .empty-icon{font-size:40px;margin-bottom:12px;opacity:.35}
 .loading{text-align:center;padding:48px 20px;color:var(--ink3);font-family:var(--mono);font-size:12px}
@@ -163,10 +163,9 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 
 <main class="main">
 
-  <!-- ── ERFASSEN ── -->
+  <!-- ERFASSEN -->
   <div class="page active" id="page-erfassen">
     <form id="entry-form" autocomplete="off">
-
       <div class="card">
         <div class="card-title">Zeitpunkt & Dauer</div>
         <div class="two-col">
@@ -174,7 +173,6 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
           <div class="field"><label>Dauer (min)</label><input type="number" id="f-dauer" min="1" max="180" placeholder="10" inputmode="numeric"></div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">Alter des Patienten</div>
         <div class="three-col">
@@ -183,53 +181,45 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
           <div class="field"><label>Ergebnis</label><div class="age-display" id="f-age-display">—</div></div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">Konsultationsgrund *</div>
         <div id="picker-grund"></div>
       </div>
-
-      <!-- Vorsorge-Fragen — erscheint nur bei U/J-Untersuchung -->
       <div class="vorsorge-card" id="vorsorge-card">
-        <div class="vorsorge-badge" id="vorsorge-badge">◆ Vorsorgeuntersuchung</div>
-        <div class="card-title" style="color:var(--teal);margin-bottom:10px">Fragen der Eltern</div>
-        <div id="picker-fragen"></div>
+        <div class="vorsorge-badge">🩺 Fragen der Eltern</div>
+        <div id="picker-vorsorge"></div>
       </div>
-
       <div class="card">
         <div class="coll-hdr" onclick="toggleColl(this)">
           <div class="card-title">Diagnose</div>
           <span class="coll-arrow">▼</span>
         </div>
         <div class="coll-body">
-          <div style="margin-bottom:16px">
+          <div class="sub-section">
             <span class="sub-label akut">Akutdiagnose</span>
             <div id="picker-diag-akut"></div>
           </div>
           <hr class="sub-divider">
-          <div>
+          <div class="sub-section">
             <span class="sub-label dauer">Dauerdiagnose</span>
             <div id="picker-diag-dauer"></div>
           </div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">Maßnahmen</div>
         <div id="picker-mass"></div>
       </div>
-
       <div class="card">
         <div class="card-title">Begleitperson</div>
         <div class="tag-row" id="begl-tags">
-          <span class="tag" onclick="toggleSingle(this,'begl-tags')">Mama</span>
-          <span class="tag" onclick="toggleSingle(this,'begl-tags')">Papa</span>
-          <span class="tag" onclick="toggleSingle(this,'begl-tags')">Beide</span>
-          <span class="tag" onclick="toggleSingle(this,'begl-tags')">Andere</span>
-          <span class="tag" onclick="toggleSingle(this,'begl-tags')">Keine</span>
+          <span class="tag" onclick="toggleMulti(this)">Mama</span>
+          <span class="tag" onclick="toggleMulti(this)">Papa</span>
+          <span class="tag" onclick="toggleMulti(this)">Bruder/Schwester</span>
+          <span class="tag" onclick="toggleMulti(this)">Andere</span>
+          <span class="tag" onclick="toggleMulti(this)">Keine</span>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">Migrationshintergrund</div>
         <div class="toggle-row">
@@ -237,7 +227,6 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
           <span id="mig-label">Nein</span>
         </div>
       </div>
-
       <div class="card">
         <div class="coll-hdr" onclick="toggleColl(this)">
           <div class="card-title">Notizen</div>
@@ -247,7 +236,6 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
           <div class="field" style="margin-bottom:0"><textarea id="f-notizen" placeholder="Freie Anmerkungen…"></textarea></div>
         </div>
       </div>
-
       <div class="form-actions">
         <button type="submit" class="btn-p" id="submit-btn">Speichern</button>
         <button type="button" class="btn-s" onclick="resetForm()">Zurücksetzen</button>
@@ -255,7 +243,7 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
     </form>
   </div>
 
-  <!-- ── EINTRÄGE ── -->
+  <!-- EINTRÄGE -->
   <div class="page" id="page-tabelle">
     <div class="search-bar">
       <input class="search-input" type="text" id="search-input" placeholder="Suchen…" oninput="searchEntries()">
@@ -264,7 +252,7 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
     <div id="table-container"><div class="loading">Wird geladen…</div></div>
   </div>
 
-  <!-- ── ANALYSE ── -->
+  <!-- ANALYSE -->
   <div class="page" id="page-analyse">
     <div id="analyse-container"><div class="loading">Wird geladen…</div></div>
   </div>
@@ -283,70 +271,60 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
   </button>
 </nav>
 
-<!-- ── Edit Modal ── -->
+<!-- Edit Modal -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">Eintrag bearbeiten</div>
     <div class="modal-body">
-
       <div class="two-col" style="margin-bottom:14px">
         <div class="field"><label>Datum & Zeit</label><input type="datetime-local" id="e-datum"></div>
         <div class="field"><label>Dauer (min)</label><input type="number" id="e-dauer" min="1" max="180" inputmode="numeric"></div>
       </div>
-
       <div class="three-col" style="margin-bottom:14px">
         <div class="field"><label>Jahre</label><input type="number" id="e-alter-j" min="0" max="18" placeholder="0" oninput="calcAge('e')" inputmode="numeric"></div>
         <div class="field"><label>Monate</label><input type="number" id="e-alter-m" min="0" max="11" placeholder="0" oninput="calcAge('e')" inputmode="numeric"></div>
         <div class="field"><label>Ergebnis</label><div class="age-display" id="e-age-display">—</div></div>
       </div>
-
       <div style="margin-bottom:14px">
         <div class="card-title" style="margin-bottom:10px">Konsultationsgrund</div>
         <div id="e-picker-grund"></div>
       </div>
-
-      <!-- Vorsorge-Fragen im Modal -->
-      <div class="vorsorge-card" id="e-vorsorge-card" style="margin-bottom:14px">
-        <div class="vorsorge-badge" id="e-vorsorge-badge">◆ Vorsorgeuntersuchung</div>
-        <div class="card-title" style="color:var(--teal);margin-bottom:10px">Fragen der Eltern</div>
-        <div id="e-picker-fragen"></div>
+      <div id="e-vorsorge-section" style="display:none;margin-bottom:14px;background:var(--teal-l);border-radius:var(--rl);border:2px solid var(--teal);padding:14px">
+        <div class="vorsorge-badge" style="margin-bottom:10px">🩺 Fragen der Eltern</div>
+        <div id="e-picker-vorsorge"></div>
       </div>
-
       <div style="margin-bottom:14px">
-        <div class="coll-hdr" onclick="toggleColl(this)">
+        <div class="coll-hdr" onclick="toggleColl(this)" style="margin-bottom:0">
           <div class="card-title" style="margin-bottom:0">Diagnose</div>
           <span class="coll-arrow">▼</span>
         </div>
         <div class="coll-body">
-          <div style="margin-bottom:16px;margin-top:12px">
+          <div class="sub-section" style="margin-top:12px">
             <span class="sub-label akut">Akutdiagnose</span>
             <div id="e-picker-diag-akut"></div>
           </div>
           <hr class="sub-divider">
-          <div>
+          <div class="sub-section">
             <span class="sub-label dauer">Dauerdiagnose</span>
             <div id="e-picker-diag-dauer"></div>
           </div>
         </div>
       </div>
-
       <div style="margin-bottom:14px">
         <div class="card-title" style="margin-bottom:10px">Maßnahmen</div>
         <div id="e-picker-mass"></div>
       </div>
-
       <div style="margin-bottom:14px">
         <div class="card-title" style="margin-bottom:10px">Begleitperson</div>
         <div class="tag-row" id="e-begl-tags">
-          <span class="tag" onclick="toggleSingle(this,'e-begl-tags')">Mama</span>
-          <span class="tag" onclick="toggleSingle(this,'e-begl-tags')">Papa</span>
-          <span class="tag" onclick="toggleSingle(this,'e-begl-tags')">Beide</span>
-          <span class="tag" onclick="toggleSingle(this,'e-begl-tags')">Andere</span>
-          <span class="tag" onclick="toggleSingle(this,'e-begl-tags')">Keine</span>
+          <span class="tag" onclick="toggleMulti(this)">Mama</span>
+          <span class="tag" onclick="toggleMulti(this)">Papa</span>
+          <span class="tag" onclick="toggleMulti(this)">Bruder/Schwester</span>
+          <span class="tag" onclick="toggleMulti(this)">Andere</span>
+          <span class="tag" onclick="toggleMulti(this)">Keine</span>
         </div>
       </div>
-
       <div style="margin-bottom:14px">
         <div class="card-title" style="margin-bottom:10px">Migrationshintergrund</div>
         <div class="toggle-row">
@@ -354,12 +332,10 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
           <span id="e-mig-label">Nein</span>
         </div>
       </div>
-
       <div style="margin-bottom:14px">
         <div class="card-title" style="margin-bottom:10px">Notizen</div>
         <div class="field" style="margin-bottom:0"><textarea id="e-notizen" placeholder="Freie Anmerkungen…"></textarea></div>
       </div>
-
     </div>
     <div class="modal-actions">
       <button class="btn-p" id="modal-save-btn" onclick="saveEdit()">Änderungen speichern</button>
@@ -372,35 +348,36 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 
 <script>
 const API = '';
-const VORSORGE_GRUENDE = new Set(['U1','U2','U3','U4','U5','U6','U7','U7a','U8','U9','U10','U11','J1','J2']);
+const VORSORGE_SET = new Set(['U1','U2','U3','U4','U5','U6','U7','U7a','U8','U9','U10','U11','J1','J2']);
 
 let vorschlaege = {
-  grund:{top:[],alle:[]}, diagnose_akut:{top:[],alle:[]}, diagnose_dauer:{top:[],alle:[]},
-  massnahmen:{top:[],alle:[]}, vorsorge_fragen:{top:[],alle:[]},
+  grund:{top:[],alle:[]}, diagnose_akut:{top:[],alle:[]},
+  diagnose_dauer:{top:[],alle:[]}, massnahmen:{top:[],alle:[]}, vorsorge_fragen:{top:[],alle:[]},
 };
 const DEFAULTS = {
   grund: ['Fieber','Husten','Impfung','Bauchschmerzen','Schnupfen','Erbrechen','Schlaf','Sprache','Hörtest','Hyposensibilisierung','U1','U2','U3','U4','U5','U6','U7','U7a','U8','U9','U10','U11','J1','J2','BE Kontrolle','Überweisung'],
   diagnose_akut: ['Viraler Infekt','Otitis media','Bronchitis','Gastroenteritis','Laryngitis','Exanthem','Fieber unklarer Genese','Impfreaktion','Konjunktivitis','Harnwegsinfekt'],
   diagnose_dauer: ['Asthma','Atopisches Ekzem','Allergische Rhinitis','Adipositas','Entwicklungsverzögerung','Epilepsie','Anämie','Diabetes mellitus Typ 1','Zöliakie','Hypothyreose'],
   massnahmen: ['Beratung','Impfung','Ausschluss','Keine','Ibuprofen','Paracetamol','ATB','Creme','Nasentropfen','Blutentnahme','Überweisung','Kontrolle','Schädelsono','Salbutamol'],
-  vorsorge_fragen: ['Ernährung','Schlaf','Impfschutz','Sprachentwicklung','Motorik','Sozialverhalten','Medienzeit','Zahnen','Schlafen','Kindergarten/Schule','Sehtest','Hörtest','Gewicht','Wachstum','Allergien','Sonnenschutz'],
+  vorsorge_fragen: ['Ernährung','Schlaf','Sprachentwicklung','Motorik','Sozialverhalten','Impfungen','Zähne / Zahnen','Stuhlgang','Gewicht / Wachstum','Sehen / Hören','Allergien','Hautpflege','Kindergarten / Schule','Geschwister-Gesundheit','Reiseimpfung'],
 };
+
+// ── Entry store (fixes openEdit with special chars) ───────────────────────────
+const _entryStore = {};
 
 // ── TagPicker ─────────────────────────────────────────────────────────────────
 const _pickers = {};
 class TagPicker {
-  constructor(elId, type, chipClass='', onChangeCallback=null) {
+  constructor(elId, type, chipClass='') {
     this.el = document.getElementById(elId);
     this.pid = elId; this.type = type; this.chipClass = chipClass;
-    this.onChange = onChangeCallback;
     this.selected = new Set();
     _pickers[elId] = this;
     this._render();
   }
   get _data() {
     const v = vorschlaege[this.type];
-    return (v && (v.top.length||v.alle.length)) ? v
-      : {top:(DEFAULTS[this.type]||[]).slice(0,10), alle:DEFAULTS[this.type]||[]};
+    return (v&&(v.top.length||v.alle.length)) ? v : {top:(DEFAULTS[this.type]||[]).slice(0,10),alle:DEFAULTS[this.type]||[]};
   }
   _render() {
     this.el.innerHTML = `
@@ -422,17 +399,21 @@ class TagPicker {
     this._inp.addEventListener('blur',()=>setTimeout(()=>this._closeDD(),200));
     this._add.addEventListener('click',()=>{const v=this._inp.value.trim();if(v)this._select(v);});
     this._renderTop();
+    if(this.pid==='picker-grund'||this.pid==='e-picker-grund') {
+      const cb=()=>checkVorsorge(this.pid);
+      this._onSelectCb=cb;
+    }
   }
   _renderTop() {
     const cc=this.chipClass;
     this._top.innerHTML=this._data.top.map(v=>
-      `<span class="tp-tag${this.selected.has(v)?' on':''}${cc?' '+cc:''}" onclick="_pickers['${this.pid}']._toggle('${v.replace(/'/g,"\\'")}')">${v}</span>`
+      `<span class="tp-tag${this.selected.has(v)?' on':''}${cc?' '+cc:''}" data-pid="${this.pid}" data-v="${encodeURIComponent(v)}" onclick="tpToggle(this)">${v}</span>`
     ).join('');
   }
   _renderChips() {
     const cc=this.chipClass;
     this._chips.innerHTML=[...this.selected].map(v=>
-      `<span class="tp-chip${cc?' '+cc:''}"><span>${v}</span><button type="button" class="tp-chip-x" onclick="_pickers['${this.pid}']._deselect('${v.replace(/'/g,"\\'")}')">×</button></span>`
+      `<span class="tp-chip${cc?' '+cc:''}"><span>${v}</span><button type="button" class="tp-chip-x" data-pid="${this.pid}" data-v="${encodeURIComponent(v)}" onclick="tpRemove(this)">×</button></span>`
     ).join('');
   }
   _onInput() {
@@ -440,42 +421,50 @@ class TagPicker {
     if(!q){this._closeDD();return;}
     const all=this._data.alle.length?this._data.alle:(DEFAULTS[this.type]||[]);
     const esc=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    const m=all.filter(v=>v.toLowerCase().includes(q.toLowerCase())&&!this.selected.has(v)).slice(0,8);
-    if(!m.length){this._closeDD();return;}
-    this._dd.innerHTML=m.map(v=>{
+    const matches=all.filter(v=>v.toLowerCase().includes(q.toLowerCase())&&!this.selected.has(v)).slice(0,8);
+    if(!matches.length){this._closeDD();return;}
+    this._dd.innerHTML=matches.map(v=>{
       const hi=v.replace(new RegExp(`(${esc})`,'gi'),'<mark>$1</mark>');
-      return `<div class="tp-option" onmousedown="_pickers['${this.pid}']._select('${v.replace(/'/g,"\\'")}')"}>${hi}</div>`;
+      return `<div class="tp-option" data-pid="${this.pid}" data-v="${encodeURIComponent(v)}" onmousedown="tpSelect(this)">${hi}</div>`;
     }).join('');
     this._dd.classList.add('open');
   }
   _closeDD(){this._dd.classList.remove('open');this._dd.innerHTML='';}
-  _select(v) {
+  _select(v){
     this.selected.add(v); this._inp.value=''; this._add.disabled=true;
     this._closeDD(); this._renderChips(); this._renderTop();
-    if(!this._data.alle.includes(v)){this._data.alle.unshift(v);if(this._data.top.length<10)this._data.top.unshift(v);}
-    if(this.onChange) this.onChange([...this.selected]);
+    if(!this._data.alle.includes(v)){this._data.alle.unshift(v);if(this._data.top.length<10)this._data.top.push(v);}
+    if(this._onSelectCb) this._onSelectCb();
   }
-  _deselect(v){this.selected.delete(v);this._renderChips();this._renderTop();if(this.onChange)this.onChange([...this.selected]);}
+  _deselect(v){this.selected.delete(v);this._renderChips();this._renderTop();if(this._onSelectCb)this._onSelectCb();}
   _toggle(v){this.selected.has(v)?this._deselect(v):this._select(v);}
   getValues(){return[...this.selected];}
-  setValues(vals){this.selected=new Set(vals||[]);this._renderChips();this._renderTop();}
-  reset(){this.selected.clear();this._inp.value='';this._add.disabled=true;this._closeDD();this._renderChips();this._renderTop();if(this.onChange)this.onChange([]);}
+  setValues(vals){this.selected=new Set(vals||[]);this._renderChips();this._renderTop();if(this._onSelectCb)this._onSelectCb();}
+  reset(){this.selected.clear();this._inp.value='';this._add.disabled=true;this._closeDD();this._renderChips();this._renderTop();if(this._onSelectCb)this._onSelectCb();}
+}
+
+// Global tp handlers (avoid inline JSON in attributes)
+function tpToggle(el){const p=_pickers[el.dataset.pid];if(p)p._toggle(decodeURIComponent(el.dataset.v));}
+function tpRemove(el){const p=_pickers[el.dataset.pid];if(p)p._deselect(decodeURIComponent(el.dataset.v));}
+function tpSelect(el){const p=_pickers[el.dataset.pid];if(p)p._select(decodeURIComponent(el.dataset.v));}
+
+// ── Vorsorge visibility ───────────────────────────────────────────────────────
+function checkVorsorge(pid) {
+  const p=_pickers[pid]; if(!p) return;
+  const has=[...p.selected].some(v=>VORSORGE_SET.has(v));
+  if(pid==='picker-grund') document.getElementById('vorsorge-card').classList.toggle('visible',has);
+  else document.getElementById('e-vorsorge-section').style.display=has?'block':'none';
 }
 
 // ── Collapsible ───────────────────────────────────────────────────────────────
 function toggleColl(hdr){hdr.classList.toggle('open');hdr.nextElementSibling.classList.toggle('open');}
 
-// ── Vorsorge detection ────────────────────────────────────────────────────────
-function checkVorsorge(selectedGrund, cardId, badgeId) {
-  const matches = selectedGrund.filter(g => VORSORGE_GRUENDE.has(g));
-  const card = document.getElementById(cardId);
-  const badge = document.getElementById(badgeId);
-  if (matches.length > 0) {
-    card.classList.add('visible');
-    badge.textContent = '◆ ' + matches.join(' / ');
-  } else {
-    card.classList.remove('visible');
-  }
+// ── Multi-select tags (begleitperson) ─────────────────────────────────────────
+function toggleMulti(el){el.classList.toggle('on');}
+function getMultiActive(gId){return Array.from(document.querySelectorAll(`#${gId} .tag.on`)).map(t=>t.textContent.trim());}
+function setMultiActive(gId,vals){
+  const set=new Set(vals||[]);
+  document.querySelectorAll(`#${gId} .tag`).forEach(t=>t.classList.toggle('on',set.has(t.textContent.trim())));
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
@@ -484,16 +473,16 @@ let mainPickers={}, editPickers={};
 
 async function init() {
   initDatetime(); updateCount();
-  try { const r=await fetch(`${API}/api/vorschlaege`); vorschlaege=await r.json(); } catch {}
-  mainPickers.grund     = new TagPicker('picker-grund',     'grund',     '', vals=>checkVorsorge(vals,'vorsorge-card','vorsorge-badge'));
-  mainPickers.fragen    = new TagPicker('picker-fragen',    'vorsorge_fragen', 'fragen');
-  mainPickers.diagAkut  = new TagPicker('picker-diag-akut', 'diagnose_akut',  'akut');
-  mainPickers.diagDauer = new TagPicker('picker-diag-dauer','diagnose_dauer', 'dauer');
-  mainPickers.mass      = new TagPicker('picker-mass',      'massnahmen');
+  try{const r=await fetch(`${API}/api/vorschlaege`);vorschlaege=await r.json();}catch{}
+  mainPickers.grund     =new TagPicker('picker-grund',      'grund');
+  mainPickers.vorsorge  =new TagPicker('picker-vorsorge',   'vorsorge_fragen','vorsorge');
+  mainPickers.diagAkut  =new TagPicker('picker-diag-akut',  'diagnose_akut','akut');
+  mainPickers.diagDauer =new TagPicker('picker-diag-dauer', 'diagnose_dauer','dauer');
+  mainPickers.mass      =new TagPicker('picker-mass',       'massnahmen');
 }
 
-function initDatetime() {
-  const now=new Date(), p=n=>String(n).padStart(2,'0');
+function initDatetime(){
+  const now=new Date(),p=n=>String(n).padStart(2,'0');
   document.getElementById('f-datum').value=`${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}T${p(now.getHours())}:${p(now.getMinutes())}`;
   document.getElementById('f-dauer').value='10';
 }
@@ -509,24 +498,21 @@ function showPage(id,btn){
   if(id==='analyse') loadAnalyse();
 }
 
-// ── Form helpers ──────────────────────────────────────────────────────────────
+// ── Form ──────────────────────────────────────────────────────────────────────
 function calcAge(pfx){
   const j=parseInt(document.getElementById(`${pfx}-alter-j`).value)||0;
   const m=parseInt(document.getElementById(`${pfx}-alter-m`).value)||0;
   const t=j*12+m;
   document.getElementById(`${pfx}-age-display`).textContent=t>0?(j>0?`${j}J ${m}M`:`${m} Mo.`)+` · ${t}Mo.`:'—';
 }
-function toggleSingle(el,gId){document.querySelectorAll(`#${gId} .tag`).forEach(t=>t.classList.remove('on'));el.classList.add('on');}
-function getActive(gId){return Array.from(document.querySelectorAll(`#${gId} .tag.on`)).map(t=>t.textContent.trim());}
-
 function resetForm(){
   document.getElementById('entry-form').reset();
   document.querySelectorAll('#begl-tags .tag').forEach(t=>t.classList.remove('on'));
   document.getElementById('mig-toggle').classList.remove('on');
   document.getElementById('mig-label').textContent='Nein';
   document.getElementById('f-age-display').textContent='—';
-  document.getElementById('vorsorge-card').classList.remove('visible');
   Object.values(mainPickers).forEach(p=>p.reset());
+  document.getElementById('vorsorge-card').classList.remove('visible');
   initDatetime();
 }
 
@@ -542,21 +528,21 @@ document.getElementById('entry-form').addEventListener('submit', async function(
     alter_j:j,alter_m:m,alter_ges:j*12+m,
     dauer:parseInt(document.getElementById('f-dauer').value)||10,
     grund,
-    vorsorge_fragen: mainPickers.fragen.getValues(),
-    diagnose_akut:   mainPickers.diagAkut.getValues(),
-    diagnose_dauer:  mainPickers.diagDauer.getValues(),
-    massnahmen:      mainPickers.mass.getValues(),
-    begleitperson:   getActive('begl-tags')[0]||'',
-    mh: document.getElementById('mig-toggle').classList.contains('on'),
-    notizen: document.getElementById('f-notizen').value.trim()
+    diagnose_akut:  mainPickers.diagAkut.getValues(),
+    diagnose_dauer: mainPickers.diagDauer.getValues(),
+    massnahmen:     mainPickers.mass.getValues(),
+    vorsorge_fragen:mainPickers.vorsorge.getValues(),
+    begleitperson:  getMultiActive('begl-tags'),
+    mh:document.getElementById('mig-toggle').classList.contains('on'),
+    notizen:document.getElementById('f-notizen').value.trim()
   };
   const btn=document.getElementById('submit-btn');
-  btn.disabled=true; btn.textContent='Speichert…';
+  btn.disabled=true;btn.textContent='Speichert…';
   try{
     const res=await fetch(`${API}/api/konsultationen`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!res.ok) throw new Error();
     try{const vr=await fetch(`${API}/api/vorschlaege`);vorschlaege=await vr.json();Object.values(mainPickers).forEach(p=>p._renderTop());}catch{}
-    resetForm(); showToast('✓ Gespeichert'); updateCount();
+    resetForm();showToast('✓ Gespeichert');updateCount();
   }catch{showToast('Fehler beim Speichern',true);}
   finally{btn.disabled=false;btn.textContent='Speichern';}
 });
@@ -567,85 +553,91 @@ async function loadTable(q=''){
   try{
     const res=await fetch(`${API}/api/konsultationen${q?'?q='+encodeURIComponent(q):''}`);
     const data=await res.json();
+    // store entries for safe modal lookup
+    data.forEach(e=>_entryStore[e.id]=e);
     if(!data.length){c.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>Noch keine Einträge.</div>';return;}
     c.innerHTML=data.map(cardHtml).join('');
   }catch{c.innerHTML='<div class="empty-state">Fehler beim Laden.</div>';}
 }
 
 function cardHtml(e){
-  const d=e.datum?new Date(e.datum):null, p=n=>String(n).padStart(2,'0');
+  const d=e.datum?new Date(e.datum):null,p=n=>String(n).padStart(2,'0');
   const dateStr=d?`${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`:'—';
   const ageStr=e.alter_ges>0?(e.alter_j>0?`${e.alter_j} J. ${e.alter_m} M.`:`${e.alter_m} Mo.`):'—';
   const akut=(e.diagnose_akut||[]).join(', ');
   const dauer=(e.diagnose_dauer||[]).join(', ');
   const mass=(e.massnahmen||[]).join(', ');
-  const fragen=(e.vorsorge_fragen||[]).join(', ');
-  const safeData=JSON.stringify(e).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  const vf=(e.vorsorge_fragen||[]).join(', ');
+  const begl=(e.begleitperson||[]).join(', ');
+  // Use id-based lookup instead of inline JSON to avoid quoting issues
   return `<div class="entry-card">
     <div class="ec-date">${dateStr}</div>
     <div class="ec-age">${ageStr}</div>
     <div class="ec-grund">${(e.grund||[]).join(', ')||'—'}</div>
-    ${fragen?`<div style="font-size:13px;margin-bottom:6px"><span class="badge b-t">Fragen</span> <span style="color:var(--ink2)">${fragen}</span></div>`:''}
     ${akut?`<div style="font-size:13px;margin-bottom:6px"><span class="badge b-r">Akut</span> <span style="color:var(--ink2)">${akut}</span></div>`:''}
-    ${dauer?`<div style="font-size:13px;margin-bottom:8px"><span class="badge b-p">Dauer</span> <span style="color:var(--ink2)">${dauer}</span></div>`:''}
+    ${dauer?`<div style="font-size:13px;margin-bottom:6px"><span class="badge b-p">Dauer</span> <span style="color:var(--ink2)">${dauer}</span></div>`:''}
+    ${vf?`<div style="font-size:13px;margin-bottom:8px"><span class="badge b-t">🩺 Vorsorge</span> <span style="color:var(--ink2)">${vf}</span></div>`:''}
     <div class="ec-meta">
       <span class="badge b-y">${e.dauer??'—'} min</span>
       ${mass?`<span class="badge b-g">${mass}</span>`:''}
-      ${e.begleitperson?`<span class="badge b-gr">${e.begleitperson}</span>`:''}
+      ${begl?`<span class="badge b-gr">${begl}</span>`:''}
       ${e.mh?'<span class="badge b-r">MH</span>':''}
     </div>
     ${e.notizen?`<div style="margin-top:8px;font-size:13px;color:var(--ink2)">${e.notizen}</div>`:''}
     <div class="ec-actions">
-      <button class="btn-edit" onclick="openEdit('${safeData}')">✎ Bearbeiten</button>
+      <button class="btn-edit" onclick="openEdit(${e.id})">✎ Bearbeiten</button>
       <button class="btn-del"  onclick="deleteEntry(${e.id})">✕ Löschen</button>
     </div>
   </div>`;
 }
 
-function searchEntries(){clearTimeout(searchTimer);searchTimer=setTimeout(()=>loadTable(document.getElementById('search-input').value),300);}
+function searchEntries(){
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(()=>loadTable(document.getElementById('search-input').value),300);
+}
 async function deleteEntry(id){
   if(!confirm('Eintrag löschen?')) return;
   await fetch(`${API}/api/konsultationen/${id}`,{method:'DELETE'});
-  loadTable(document.getElementById('search-input')?.value||''); updateCount();
+  delete _entryStore[id];
+  loadTable(document.getElementById('search-input')?.value||'');
+  updateCount();
 }
 
 // ── Edit modal ────────────────────────────────────────────────────────────────
-function openEdit(jsonStr){
-  const e = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
-  editingId=e.id;
-  const d=e.datum?new Date(e.datum):new Date(), p=n=>String(n).padStart(2,'0');
+function openEdit(id){
+  const e=_entryStore[id]; if(!e){showToast('Eintrag nicht gefunden',true);return;}
+  editingId=id;
+  const d=e.datum?new Date(e.datum):new Date(),p=n=>String(n).padStart(2,'0');
   document.getElementById('e-datum').value=`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
   document.getElementById('e-dauer').value=e.dauer||10;
   document.getElementById('e-alter-j').value=e.alter_j||0;
   document.getElementById('e-alter-m').value=e.alter_m||0;
   calcAge('e');
-  document.querySelectorAll('#e-begl-tags .tag').forEach(t=>t.classList.toggle('on',t.textContent.trim()===e.begleitperson));
+  setMultiActive('e-begl-tags', e.begleitperson||[]);
   const mt=document.getElementById('e-mig-toggle');
   e.mh?mt.classList.add('on'):mt.classList.remove('on');
   document.getElementById('e-mig-label').textContent=e.mh?'Ja':'Nein';
   document.getElementById('e-notizen').value=e.notizen||'';
-
+  // init edit pickers once
   if(!editPickers.grund){
-    editPickers.grund     = new TagPicker('e-picker-grund',     'grund',     '', vals=>checkVorsorge(vals,'e-vorsorge-card','e-vorsorge-badge'));
-    editPickers.fragen    = new TagPicker('e-picker-fragen',    'vorsorge_fragen','fragen');
-    editPickers.diagAkut  = new TagPicker('e-picker-diag-akut', 'diagnose_akut',  'akut');
-    editPickers.diagDauer = new TagPicker('e-picker-diag-dauer','diagnose_dauer', 'dauer');
-    editPickers.mass      = new TagPicker('e-picker-mass',      'massnahmen');
+    editPickers.grund     =new TagPicker('e-picker-grund',      'grund');
+    editPickers.vorsorge  =new TagPicker('e-picker-vorsorge',   'vorsorge_fragen','vorsorge');
+    editPickers.diagAkut  =new TagPicker('e-picker-diag-akut',  'diagnose_akut','akut');
+    editPickers.diagDauer =new TagPicker('e-picker-diag-dauer', 'diagnose_dauer','dauer');
+    editPickers.mass      =new TagPicker('e-picker-mass',       'massnahmen');
   }
   editPickers.grund.setValues(e.grund||[]);
-  editPickers.fragen.setValues(e.vorsorge_fragen||[]);
+  editPickers.vorsorge.setValues(e.vorsorge_fragen||[]);
   editPickers.diagAkut.setValues(e.diagnose_akut||[]);
   editPickers.diagDauer.setValues(e.diagnose_dauer||[]);
   editPickers.mass.setValues(e.massnahmen||[]);
-  checkVorsorge(e.grund||[],'e-vorsorge-card','e-vorsorge-badge');
-
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
 
 async function saveEdit(){
   const btn=document.getElementById('modal-save-btn');
-  btn.disabled=true; btn.textContent='Speichert…';
+  btn.disabled=true;btn.textContent='Speichert…';
   const j=parseInt(document.getElementById('e-alter-j').value)||0;
   const m=parseInt(document.getElementById('e-alter-m').value)||0;
   const payload={
@@ -653,13 +645,13 @@ async function saveEdit(){
     alter_j:j,alter_m:m,alter_ges:j*12+m,
     dauer:parseInt(document.getElementById('e-dauer').value)||10,
     grund:          editPickers.grund.getValues(),
-    vorsorge_fragen:editPickers.fragen.getValues(),
     diagnose_akut:  editPickers.diagAkut.getValues(),
     diagnose_dauer: editPickers.diagDauer.getValues(),
     massnahmen:     editPickers.mass.getValues(),
-    begleitperson:  getActive('e-begl-tags')[0]||'',
-    mh: document.getElementById('e-mig-toggle').classList.contains('on'),
-    notizen: document.getElementById('e-notizen').value.trim()
+    vorsorge_fragen:editPickers.vorsorge.getValues(),
+    begleitperson:  getMultiActive('e-begl-tags'),
+    mh:document.getElementById('e-mig-toggle').classList.contains('on'),
+    notizen:document.getElementById('e-notizen').value.trim()
   };
   try{
     const res=await fetch(`${API}/api/konsultationen/${editingId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
@@ -679,94 +671,42 @@ function closeModalDirect(){document.getElementById('modal-overlay').classList.r
 async function loadAnalyse(){
   const c=document.getElementById('analyse-container');
   try{
-    const res=await fetch(`${API}/api/stats`); const s=await res.json();
+    const res=await fetch(`${API}/api/stats`);const s=await res.json();
     if(s.total===0){c.innerHTML='<div class="empty-state"><div class="empty-icon">◎</div>Noch keine Daten.</div>';return;}
-
-    const hasFragen = s.vorsorge_fragen_counts && Object.keys(s.vorsorge_fragen_counts).length > 0;
-    const hasDiagAkut = s.diag_akut_counts && Object.keys(s.diag_akut_counts).length > 0;
-    const hasDiagDauer = s.diag_dauer_counts && Object.keys(s.diag_dauer_counts).length > 0;
-    const hasMass = s.mass_counts && Object.keys(s.mass_counts).length > 0;
-
-    const fragenH = hasFragen ? Math.max(180, Object.keys(s.vorsorge_fragen_counts).length*34+40) : 0;
-    const diagAkutH = hasDiagAkut ? Math.max(180, Object.keys(s.diag_akut_counts).length*34+40) : 0;
-    const diagDauerH = hasDiagDauer ? Math.max(180, Object.keys(s.diag_dauer_counts).length*34+40) : 0;
-    const massH = hasMass ? Math.max(180, Object.keys(s.mass_counts).length*34+40) : 0;
-
+    const hasDA=Object.keys(s.diag_akut_counts||{}).length>0;
+    const hasDD=Object.keys(s.diag_dauer_counts||{}).length>0;
+    const hasVF=Object.keys(s.vorsorge_fragen_counts||{}).length>0;
     c.innerHTML=`
       <div class="stats-row">
         <div class="stat-card"><div class="stat-label">Konsultationen</div><div class="stat-value">${s.total}</div></div>
-        <div class="stat-card"><div class="stat-label">Ø Dauer</div><div class="stat-value">${s.avg_dauer}<span style="font-size:14px;font-weight:400;color:var(--ink2)"> min</span></div></div>
-        <div class="stat-card"><div class="stat-label">Mit MH</div><div class="stat-value">${s.mh_pct}<span style="font-size:14px;font-weight:400;color:var(--ink2)">%</span></div><div class="stat-sub">${s.mh_count} von ${s.total}</div></div>
-        <div class="stat-card"><div class="stat-label">Häufigster Grund</div><div class="stat-value" style="font-size:15px;margin-top:2px">${s.top_grund||'—'}</div><div class="stat-sub">${s.top_grund_count?s.top_grund_count+'×':''}</div></div>
+        <div class="stat-card"><div class="stat-label">Ø Dauer</div><div class="stat-value">${s.avg_dauer}<span style="font-size:15px;font-weight:400;color:var(--ink2)"> min</span></div></div>
+        <div class="stat-card"><div class="stat-label">Mit MH</div><div class="stat-value">${s.mh_pct}<span style="font-size:15px;font-weight:400;color:var(--ink2)">%</span></div><div class="stat-sub">${s.mh_count} von ${s.total}</div></div>
+        <div class="stat-card"><div class="stat-label">Häufigster Grund</div><div class="stat-value" style="font-size:16px;margin-top:2px">${s.top_grund||'—'}</div><div class="stat-sub">${s.top_grund_count?s.top_grund_count+'×':''}</div></div>
       </div>
-
+      <div class="section-hdr">Übersicht</div>
       <div class="chart-card"><div class="chart-title">Altersverteilung</div><div style="position:relative;height:200px"><canvas id="ca"></canvas></div></div>
-      <div class="chart-card"><div class="chart-title">Häufigste Gründe (Top 10)</div><div style="position:relative;height:${Math.max(180,Object.keys(s.grund_counts).length*34+40)}px"><canvas id="cg"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Häufigste Gründe</div><div style="position:relative;height:${Math.max(180,Object.keys(s.grund_counts).length*34+40)}px"><canvas id="cg"></canvas></div></div>
       <div class="chart-card"><div class="chart-title">Dauer-Verteilung</div><div style="position:relative;height:200px"><canvas id="cd"></canvas></div></div>
-
-      ${hasMass?`<div class="chart-card"><div class="chart-title">Maßnahmen</div><div style="position:relative;height:${massH}px"><canvas id="cm"></canvas></div></div>`:''}
-      ${hasDiagAkut?`<div class="chart-card" style="border-color:var(--red)"><div class="chart-title" style="color:var(--red)">Akutdiagnosen</div><div style="position:relative;height:${diagAkutH}px"><canvas id="cda"></canvas></div></div>`:''}
-      ${hasDiagDauer?`<div class="chart-card" style="border-color:var(--purple)"><div class="chart-title" style="color:var(--purple)">Dauerdiagnosen</div><div style="position:relative;height:${diagDauerH}px"><canvas id="cdd"></canvas></div></div>`:''}
-      ${hasFragen?`<div class="chart-card teal"><div class="chart-title">Elternfragen bei Vorsorge</div><div style="position:relative;height:${fragenH}px"><canvas id="cf"></canvas></div></div>`:''}
+      ${hasDA||hasDD?'<div class="section-hdr">Diagnosen</div>':''}
+      ${hasDA?`<div class="chart-card accent-red"><div class="chart-title">Akutdiagnosen</div><div style="position:relative;height:${Math.max(160,Object.keys(s.diag_akut_counts).length*32+40)}px"><canvas id="cda"></canvas></div></div>`:''}
+      ${hasDD?`<div class="chart-card accent-purple"><div class="chart-title">Dauerdiagnosen</div><div style="position:relative;height:${Math.max(160,Object.keys(s.diag_dauer_counts).length*32+40)}px"><canvas id="cdd"></canvas></div></div>`:''}
+      ${hasVF?`<div class="section-hdr">Vorsorge</div><div class="chart-card accent-teal"><div class="chart-title">Häufige Elternfragen</div><div style="position:relative;height:${Math.max(180,Object.keys(s.vorsorge_fragen_counts).length*32+40)}px"><canvas id="cvf"></canvas></div></div>`:''}
     `;
-
-    const tc='#9E9889', gc='rgba(0,0,0,.06)';
-    const barH = (labels, color, canvasId) => new Chart(document.getElementById(canvasId), {
-      type:'bar',
-      data:{labels,datasets:[{data:labels.map(l=>{}),backgroundColor:color,borderRadius:6}]},
-      options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true},y:{ticks:{color:tc,font:{size:10}},grid:{color:'transparent'}}}}
-    });
-
-    Object.values(chartInstances).forEach(c=>c.destroy()); chartInstances={};
-
-    chartInstances.a=new Chart(document.getElementById('ca'),{type:'bar',
-      data:{labels:Object.keys(s.alter_dist),datasets:[{data:Object.values(s.alter_dist),backgroundColor:'#2A5C45',borderRadius:6}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true}}}});
-
+    const tc='#9E9889',gc='rgba(0,0,0,.06)';
+    Object.values(chartInstances).forEach(c=>c.destroy());chartInstances={};
+    const barH=(id,labels,data,color)=>new Chart(document.getElementById(id),{type:'bar',data:{labels,datasets:[{data,backgroundColor:color,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true}}}});
+    const barY=(id,labels,data,color)=>new Chart(document.getElementById(id),{type:'bar',data:{labels,datasets:[{data,backgroundColor:color,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true},y:{ticks:{color:tc,font:{size:10}},grid:{color:'transparent'}}}}});
+    chartInstances.a=barH('ca',Object.keys(s.alter_dist),Object.values(s.alter_dist),'#2A5C45');
     const tg=Object.entries(s.grund_counts).slice(0,10);
-    chartInstances.g=new Chart(document.getElementById('cg'),{type:'bar',
-      data:{labels:tg.map(g=>g[0]),datasets:[{data:tg.map(g=>g[1]),backgroundColor:'#5C8A2A',borderRadius:6}]},
-      options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true},y:{ticks:{color:tc,font:{size:10}},grid:{color:'transparent'}}}}});
-
-    chartInstances.d=new Chart(document.getElementById('cd'),{type:'bar',
-      data:{labels:Object.keys(s.dauer_buckets),datasets:[{data:Object.values(s.dauer_buckets),backgroundColor:'#C94B1E',borderRadius:6}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true}}}});
-
-    if(hasMass){
-      const tm=Object.entries(s.mass_counts).slice(0,10);
-      chartInstances.m=new Chart(document.getElementById('cm'),{type:'bar',
-        data:{labels:tm.map(m=>m[0]),datasets:[{data:tm.map(m=>m[1]),backgroundColor:'#2A5C45',borderRadius:6}]},
-        options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
-          scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true},y:{ticks:{color:tc,font:{size:10}},grid:{color:'transparent'}}}}});}
-
-    if(hasDiagAkut){
-      const tda=Object.entries(s.diag_akut_counts).slice(0,10);
-      chartInstances.da=new Chart(document.getElementById('cda'),{type:'bar',
-        data:{labels:tda.map(d=>d[0]),datasets:[{data:tda.map(d=>d[1]),backgroundColor:'#C94B1E',borderRadius:6}]},
-        options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
-          scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true},y:{ticks:{color:tc,font:{size:10}},grid:{color:'transparent'}}}}});}
-
-    if(hasDiagDauer){
-      const tdd=Object.entries(s.diag_dauer_counts).slice(0,10);
-      chartInstances.dd=new Chart(document.getElementById('cdd'),{type:'bar',
-        data:{labels:tdd.map(d=>d[0]),datasets:[{data:tdd.map(d=>d[1]),backgroundColor:'#6B3FA0',borderRadius:6}]},
-        options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
-          scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true},y:{ticks:{color:tc,font:{size:10}},grid:{color:'transparent'}}}}});}
-
-    if(hasFragen){
-      const tf=Object.entries(s.vorsorge_fragen_counts).slice(0,10);
-      chartInstances.f=new Chart(document.getElementById('cf'),{type:'bar',
-        data:{labels:tf.map(f=>f[0]),datasets:[{data:tf.map(f=>f[1]),backgroundColor:'#0E6B6B',borderRadius:6}]},
-        options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
-          scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true},y:{ticks:{color:tc,font:{size:10}},grid:{color:'transparent'}}}}});}
-
-  }catch{c.innerHTML='<div class="empty-state">Fehler beim Laden.</div>';}
+    chartInstances.g=barY('cg',tg.map(g=>g[0]),tg.map(g=>g[1]),'#5C8A2A');
+    chartInstances.d=barH('cd',Object.keys(s.dauer_buckets),Object.values(s.dauer_buckets),'#C94B1E');
+    if(hasDA){const e=Object.entries(s.diag_akut_counts).slice(0,10);chartInstances.da=barY('cda',e.map(x=>x[0]),e.map(x=>x[1]),'#C94B1E');}
+    if(hasDD){const e=Object.entries(s.diag_dauer_counts).slice(0,10);chartInstances.dd=barY('cdd',e.map(x=>x[0]),e.map(x=>x[1]),'#6B3FA0');}
+    if(hasVF){const e=Object.entries(s.vorsorge_fragen_counts).slice(0,12);chartInstances.vf=barY('cvf',e.map(x=>x[0]),e.map(x=>x[1]),'#0F6E6E');}
+  }catch(err){c.innerHTML='<div class="empty-state">Fehler beim Laden.</div>';console.error(err);}
 }
 
+// ── Utils ─────────────────────────────────────────────────────────────────────
 async function updateCount(){
   try{const r=await fetch(`${API}/api/stats`);const s=await r.json();document.getElementById('entry-count').textContent=s.total+(s.total===1?' Eintrag':' Einträge');}catch{}
 }
