@@ -35,6 +35,8 @@ def init_db():
         for col in ["diagnose_akut","diagnose_dauer","vorsorge_fragen","ebm_ziffern"]:
             if col not in cols:
                 db.execute(f"ALTER TABLE konsultationen ADD COLUMN {col} TEXT DEFAULT ''")
+        if "alter_d" not in cols:
+            db.execute("ALTER TABLE konsultationen ADD COLUMN alter_d INTEGER DEFAULT 0")
         # migrate old field names
         if "diagnose" in cols and "diagnose_akut" in cols:
             db.execute("UPDATE konsultationen SET diagnose_akut=diagnose WHERE (diagnose_akut IS NULL OR diagnose_akut='') AND diagnose IS NOT NULL AND diagnose!=''")
@@ -68,6 +70,7 @@ class KonsultationIn(BaseModel):
     datum: Optional[str] = None
     alter_j: Optional[int] = 0
     alter_m: Optional[int] = 0
+    alter_d: Optional[int] = 0
     alter_ges: Optional[int] = 0
     dauer: Optional[int] = None
     grund: Optional[List[str]] = []
@@ -108,11 +111,11 @@ def create_konsultation(k: KonsultationIn):
     with get_db() as db:
         cur = db.execute("""
             INSERT INTO konsultationen
-              (datum,alter_j,alter_m,alter_ges,dauer,grund,diagnose_akut,diagnose_dauer,massnahmen,vorsorge_fragen,begleitperson,ebm_ziffern,mh,notizen)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+              (datum,alter_j,alter_m,alter_d,alter_ges,dauer,grund,diagnose_akut,diagnose_dauer,massnahmen,vorsorge_fragen,begleitperson,ebm_ziffern,mh,notizen)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         """, (
             k.datum or datetime.now().isoformat(timespec='minutes'),
-            k.alter_j or 0, k.alter_m or 0, k.alter_ges or 0, k.dauer,
+            k.alter_j or 0, k.alter_m or 0, k.alter_d or 0, k.alter_ges or 0, k.dauer,
             _dumps(k.grund), _dumps(k.diagnose_akut), _dumps(k.diagnose_dauer),
             _dumps(k.massnahmen), _dumps(k.vorsorge_fragen), _dumps(k.begleitperson),
             _dumps(k.ebm_ziffern), 1 if k.mh else 0, k.notizen or ""
@@ -128,12 +131,12 @@ def update_konsultation(entry_id: int, k: KonsultationIn):
             raise HTTPException(status_code=404, detail="Nicht gefunden")
         db.execute("""
             UPDATE konsultationen SET
-              datum=?,alter_j=?,alter_m=?,alter_ges=?,dauer=?,
+              datum=?,alter_j=?,alter_m=?,alter_d=?,alter_ges=?,dauer=?,
               grund=?,diagnose_akut=?,diagnose_dauer=?,massnahmen=?,vorsorge_fragen=?,begleitperson=?,ebm_ziffern=?,mh=?,notizen=?
             WHERE id=?
         """, (
             k.datum or datetime.now().isoformat(timespec='minutes'),
-            k.alter_j or 0, k.alter_m or 0, k.alter_ges or 0, k.dauer,
+            k.alter_j or 0, k.alter_m or 0, k.alter_d or 0, k.alter_ges or 0, k.dauer,
             _dumps(k.grund), _dumps(k.diagnose_akut), _dumps(k.diagnose_dauer),
             _dumps(k.massnahmen), _dumps(k.vorsorge_fragen), _dumps(k.begleitperson),
             _dumps(k.ebm_ziffern), 1 if k.mh else 0, k.notizen or "", entry_id
@@ -293,11 +296,11 @@ def export_csv():
     output = io.StringIO()
     output.write('\ufeff')
     writer = csv.writer(output, delimiter=';')
-    writer.writerow(["ID","Datum","Alter (J)","Alter (M)","Alter (Ges. Mo.)","Dauer (min)",
+    writer.writerow(["ID","Datum","Alter (J)","Alter (M)","Alter (Tage)","Alter (Ges. Mo.)","Dauer (min)",
                      "Grund","Diagnose (akut)","Diagnose (Dauer)","Maßnahmen","Elternfragen","Begleitperson","EBM-Ziffern","MH","Notizen"])
     for e in entries:
         writer.writerow([e["id"],e.get("datum",""),e.get("alter_j",0),e.get("alter_m",0),
-            e.get("alter_ges",0),e.get("dauer",""),
+            e.get("alter_d",0),e.get("alter_ges",0),e.get("dauer",""),
             ", ".join(e.get("grund") or []),
             ", ".join(e.get("diagnose_akut") or []),
             ", ".join(e.get("diagnose_dauer") or []),

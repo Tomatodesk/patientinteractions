@@ -106,7 +106,9 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 .btn-p:active{opacity:.85}.btn-p:disabled{opacity:.5}
 .btn-s{width:100%;background:transparent;color:var(--ink2);border:1.5px solid var(--border2);border-radius:var(--r);padding:14px;font-family:var(--sans);font-size:15px;cursor:pointer;min-height:50px;-webkit-appearance:none}
 .form-actions{display:flex;flex-direction:column;gap:10px;margin-top:4px}
-.weiter-btn{display:block;width:100%;text-align:right;background:none;border:none;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--accent);padding:8px 2px 0;cursor:pointer;letter-spacing:.02em}
+.dauer-btns{display:flex;gap:6px;margin-top:8px}
+.dauer-btn{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:8px;padding:9px 4px;font-family:var(--mono);font-size:13px;color:var(--ink2);cursor:pointer;text-align:center;-webkit-appearance:none}
+.dauer-btn:active{background:var(--accent-l);border-color:var(--accent);color:var(--accent)}
 /* toast */
 .toast{position:fixed;top:16px;left:16px;right:16px;background:var(--ink);color:#fff;padding:14px 18px;border-radius:var(--r);font-size:14px;font-weight:500;opacity:0;transform:translateY(-8px);transition:all .25s;pointer-events:none;z-index:999;text-align:center}
 .toast.show{opacity:1;transform:translateY(0)}.toast.err{background:var(--red)}
@@ -169,7 +171,7 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
   <!-- ERFASSEN -->
   <div class="page active" id="page-erfassen">
     <form id="entry-form" autocomplete="off">
-      <div class="card" id="card-datum">
+      <div class="card">
         <div class="card-title">Zeitpunkt & Dauer</div>
         <div class="two-col">
           <div class="field">
@@ -179,23 +181,29 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
             </label>
             <input type="datetime-local" id="f-datum">
           </div>
-          <div class="field"><label>Dauer (min)</label><input type="number" id="f-dauer" min="1" max="180" placeholder="10" inputmode="numeric"></div>
+          <div class="field">
+            <label>Dauer (min)</label>
+            <input type="number" id="f-dauer" min="1" max="180" placeholder="10" inputmode="numeric">
+            <div class="dauer-btns">
+              <button type="button" class="dauer-btn" onclick="setDauer('f',5)">5</button>
+              <button type="button" class="dauer-btn" onclick="setDauer('f',10)">10</button>
+              <button type="button" class="dauer-btn" onclick="setDauer('f',15)">15</button>
+              <button type="button" class="dauer-btn" onclick="setDauer('f',20)">20</button>
+            </div>
+          </div>
         </div>
-        <button type="button" class="weiter-btn" onclick="scrollToNext(this)">Weiter ↓</button>
       </div>
-      <div class="card" id="card-alter">
+      <div class="card">
         <div class="card-title">Alter des Patienten</div>
         <div class="three-col">
-          <div class="field"><label>Jahre</label><input type="number" id="f-alter-j" min="0" max="18" placeholder="0" oninput="calcAge('f')" inputmode="numeric"></div>
-          <div class="field"><label>Monate</label><input type="number" id="f-alter-m" min="0" max="11" placeholder="0" oninput="calcAge('f')" inputmode="numeric"></div>
-          <div class="field"><label>Ergebnis</label><div class="age-display" id="f-age-display">—</div></div>
+          <div class="field"><label>Jahre</label><input type="number" id="f-alter-j" min="0" max="18" placeholder="0" inputmode="numeric"></div>
+          <div class="field"><label>Monate</label><input type="number" id="f-alter-m" min="0" max="11" placeholder="0" inputmode="numeric"></div>
+          <div class="field"><label>Tage</label><input type="number" id="f-alter-d" min="0" max="30" placeholder="0" inputmode="numeric"></div>
         </div>
-        <button type="button" class="weiter-btn" onclick="scrollToNext(this)">Weiter ↓</button>
       </div>
-      <div class="card" id="card-grund">
+      <div class="card">
         <div class="card-title">Konsultationsgrund *</div>
         <div id="picker-grund"></div>
-        <button type="button" class="weiter-btn" onclick="scrollToNext(this)">Weiter ↓</button>
       </div>
       <div class="card">
         <div class="coll-hdr" onclick="toggleColl(this)">
@@ -223,10 +231,9 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
           </div>
         </div>
       </div>
-      <div class="card" id="card-mass">
+      <div class="card">
         <div class="card-title">Maßnahmen</div>
         <div id="picker-mass"></div>
-        <button type="button" class="weiter-btn" onclick="scrollToNext(this)">Weiter ↓</button>
       </div>
       <div class="card">
         <div class="coll-hdr" onclick="toggleColl(this)">
@@ -308,12 +315,21 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
     <div class="modal-body">
       <div class="two-col" style="margin-bottom:14px">
         <div class="field"><label>Datum & Zeit</label><input type="datetime-local" id="e-datum"></div>
-        <div class="field"><label>Dauer (min)</label><input type="number" id="e-dauer" min="1" max="180" inputmode="numeric"></div>
+        <div class="field">
+          <label>Dauer (min)</label>
+          <input type="number" id="e-dauer" min="1" max="180" inputmode="numeric">
+          <div class="dauer-btns">
+            <button type="button" class="dauer-btn" onclick="setDauer('e',5)">5</button>
+            <button type="button" class="dauer-btn" onclick="setDauer('e',10)">10</button>
+            <button type="button" class="dauer-btn" onclick="setDauer('e',15)">15</button>
+            <button type="button" class="dauer-btn" onclick="setDauer('e',20)">20</button>
+          </div>
+        </div>
       </div>
       <div class="three-col" style="margin-bottom:14px">
-        <div class="field"><label>Jahre</label><input type="number" id="e-alter-j" min="0" max="18" placeholder="0" oninput="calcAge('e')" inputmode="numeric"></div>
-        <div class="field"><label>Monate</label><input type="number" id="e-alter-m" min="0" max="11" placeholder="0" oninput="calcAge('e')" inputmode="numeric"></div>
-        <div class="field"><label>Ergebnis</label><div class="age-display" id="e-age-display">—</div></div>
+        <div class="field"><label>Jahre</label><input type="number" id="e-alter-j" min="0" max="18" placeholder="0" inputmode="numeric"></div>
+        <div class="field"><label>Monate</label><input type="number" id="e-alter-m" min="0" max="11" placeholder="0" inputmode="numeric"></div>
+        <div class="field"><label>Tage</label><input type="number" id="e-alter-d" min="0" max="30" placeholder="0" inputmode="numeric"></div>
       </div>
       <div style="margin-bottom:14px">
         <div class="card-title" style="margin-bottom:10px">Konsultationsgrund</div>
@@ -329,11 +345,11 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
         </div>
       </div>
       <div style="margin-bottom:14px">
-        <div class="coll-hdr" onclick="toggleColl(this)" style="margin-bottom:0">
+        <div class="coll-hdr" id="e-diag-hdr" onclick="toggleColl(this)" style="margin-bottom:0">
           <div class="card-title" style="margin-bottom:0">Diagnose</div>
           <span class="coll-arrow">▼</span>
         </div>
-        <div class="coll-body">
+        <div class="coll-body" id="e-diag-body">
           <div class="sub-section" style="margin-top:12px">
             <span class="sub-label akut">Akutdiagnose</span>
             <div id="e-picker-diag-akut"></div>
@@ -413,9 +429,9 @@ const _entryStore = {};
 // ── TagPicker ─────────────────────────────────────────────────────────────────
 const _pickers = {};
 class TagPicker {
-  constructor(elId, type, chipClass='') {
+  constructor(elId, type, chipClass='', compact=false) {
     this.el = document.getElementById(elId);
-    this.pid = elId; this.type = type; this.chipClass = chipClass;
+    this.pid = elId; this.type = type; this.chipClass = chipClass; this.compact = compact;
     this.selected = new Set();
     _pickers[elId] = this;
     this._render();
@@ -436,13 +452,13 @@ class TagPicker {
         <button type="button" class="tp-add-btn" id="${this.pid}-add" disabled>+</button>
         <div class="tp-dropdown" id="${this.pid}-dd"></div>
       </div>
-      <div class="tp-top-label">Häufig verwendet</div>
-      <div class="tp-top-tags" id="${this.pid}-top"></div>`;
+      ${this.compact?'':'<div class="tp-top-label">Häufig verwendet</div>'}
+      ${this.compact?'':'<div class="tp-top-tags" id="'+this.pid+'-top"></div>'}`;
     this._chips=document.getElementById(`${this.pid}-chips`);
     this._inp=document.getElementById(`${this.pid}-inp`);
     this._add=document.getElementById(`${this.pid}-add`);
     this._dd=document.getElementById(`${this.pid}-dd`);
-    this._top=document.getElementById(`${this.pid}-top`);
+    this._top=this.compact?null:document.getElementById(`${this.pid}-top`);
     this._inp.addEventListener('input',()=>this._onInput());
     this._inp.addEventListener('focus',()=>this._onInput());
     this._inp.addEventListener('blur',()=>setTimeout(()=>this._closeDD(),200));
@@ -457,6 +473,7 @@ class TagPicker {
     }
   }
   _renderTop() {
+    if(!this._top) return;
     const cc=this.chipClass;
     this._top.innerHTML=this._data.top.map(v=>
       `<span class="tp-tag${this.selected.has(v)?' on':''}${cc?' '+cc:''}" data-pid="${this.pid}" data-v="${encodeURIComponent(v)}" onclick="tpToggle(this)">${v}</span>`
@@ -504,14 +521,8 @@ function tpSelect(el){const p=_pickers[el.dataset.pid];if(p)p._select(decodeURIC
 // ── Collapsible ───────────────────────────────────────────────────────────────
 function toggleColl(hdr){hdr.classList.toggle('open');hdr.nextElementSibling.classList.toggle('open');}
 
-// ── Weiter-Button ─────────────────────────────────────────────────────────────
-function scrollToNext(btn) {
-  const card=btn.closest('.card');
-  const allCards=Array.from(document.querySelectorAll('#page-erfassen .card'));
-  const idx=allCards.indexOf(card);
-  const next=allCards[idx+1];
-  if(next) next.scrollIntoView({behavior:'smooth',block:'start'});
-}
+// ── Dauer-Schnellbuttons ──────────────────────────────────────────────────────
+function setDauer(pfx, val){ document.getElementById(`${pfx}-dauer`).value=val; }
 
 // ── EBM Kontext (Grund + Diagnose + Maßnahmen) ────────────────────────────────
 let ebmCtxTimer=null;
@@ -620,12 +631,6 @@ function showPage(id,btn){
 }
 
 // ── Form ──────────────────────────────────────────────────────────────────────
-function calcAge(pfx){
-  const j=parseInt(document.getElementById(`${pfx}-alter-j`).value)||0;
-  const m=parseInt(document.getElementById(`${pfx}-alter-m`).value)||0;
-  const t=j*12+m;
-  document.getElementById(`${pfx}-age-display`).textContent=t>0?(j>0?`${j}J ${m}M`:`${m} Mo.`)+` · ${t}Mo.`:'—';
-}
 function resetForm(){
   document.getElementById('entry-form').reset();
   document.querySelectorAll('#begl-tags .tag').forEach(t=>t.classList.remove('on'));
@@ -644,9 +649,10 @@ document.getElementById('entry-form').addEventListener('submit', async function(
   if(!grund.length){showToast('Bitte Konsultationsgrund angeben',true);return;}
   const j=parseInt(document.getElementById('f-alter-j').value)||0;
   const m=parseInt(document.getElementById('f-alter-m').value)||0;
+  const d=parseInt(document.getElementById('f-alter-d').value)||0;
   const payload={
     datum:document.getElementById('f-datum').value||null,
-    alter_j:j,alter_m:m,alter_ges:j*12+m,
+    alter_j:j,alter_m:m,alter_d:d,alter_ges:j*12+m,
     dauer:parseInt(document.getElementById('f-dauer').value)||10,
     grund,
     diagnose_akut:  mainPickers.diagAkut.getValues(),
@@ -701,7 +707,7 @@ function toggleSort(){
 function cardHtml(e){
   const d=e.datum?new Date(e.datum):null,p=n=>String(n).padStart(2,'0');
   const dateStr=d?`${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`:'—';
-  const ageStr=e.alter_ges>0?(e.alter_j>0?`${e.alter_j} J. ${e.alter_m} M.`:`${e.alter_m} Mo.`):'—';
+  const ageStr=e.alter_ges>0?(e.alter_j>0?`${e.alter_j} J. ${e.alter_m} M.`:`${e.alter_m} Mo.`):(e.alter_d>0?`${e.alter_d} Tage`:'—');
   const akut=(e.diagnose_akut||[]).join(', ');
   const dauer=(e.diagnose_dauer||[]).join(', ');
   const mass=(e.massnahmen||[]).join(', ');
@@ -752,7 +758,7 @@ function openEdit(id){
   document.getElementById('e-dauer').value=e.dauer||10;
   document.getElementById('e-alter-j').value=e.alter_j||0;
   document.getElementById('e-alter-m').value=e.alter_m||0;
-  calcAge('e');
+  document.getElementById('e-alter-d').value=e.alter_d||0;
   setMultiActive('e-begl-tags', e.begleitperson||[]);
   const mt=document.getElementById('e-mig-toggle');
   e.mh?mt.classList.add('on'):mt.classList.remove('on');
@@ -760,12 +766,12 @@ function openEdit(id){
   document.getElementById('e-notizen').value=e.notizen||'';
   // init edit pickers once
   if(!editPickers.grund){
-    editPickers.grund     =new TagPicker('e-picker-grund',      'grund');
-    editPickers.vorsorge  =new TagPicker('e-picker-vorsorge',   'vorsorge_fragen','vorsorge');
-    editPickers.diagAkut  =new TagPicker('e-picker-diag-akut',  'diagnose_akut','akut');
-    editPickers.diagDauer =new TagPicker('e-picker-diag-dauer', 'diagnose_dauer','dauer');
-    editPickers.mass      =new TagPicker('e-picker-mass',       'massnahmen');
-    editPickers.ebm       =new TagPicker('e-picker-ebm',        'ebm_ziffern');
+    editPickers.grund     =new TagPicker('e-picker-grund',      'grund',          '',        true);
+    editPickers.vorsorge  =new TagPicker('e-picker-vorsorge',   'vorsorge_fragen','vorsorge',true);
+    editPickers.diagAkut  =new TagPicker('e-picker-diag-akut',  'diagnose_akut',  'akut',    true);
+    editPickers.diagDauer =new TagPicker('e-picker-diag-dauer', 'diagnose_dauer', 'dauer',   true);
+    editPickers.mass      =new TagPicker('e-picker-mass',       'massnahmen',     '',        true);
+    editPickers.ebm       =new TagPicker('e-picker-ebm',        'ebm_ziffern',    '',        true);
   }
   editPickers.grund.setValues(e.grund||[]);
   editPickers.vorsorge.setValues(e.vorsorge_fragen||[]);
@@ -778,11 +784,18 @@ function openEdit(id){
   const eehdr=eecb?eecb.previousElementSibling:null;
   if((e.ebm_ziffern||[]).length>0&&eehdr){eehdr.classList.add('open');eecb.classList.add('open');}
   else if(eehdr){eehdr.classList.remove('open');eecb.classList.remove('open');}
-  // auto-expand Elternfragen if it has values
-  const evh=document.getElementById('e-vorsorge-hdr');
-  const evcb=document.getElementById('e-vorsorge-coll-body');
-  if((e.vorsorge_fragen||[]).length>0){evh.classList.add('open');evcb.classList.add('open');}
-  else{evh.classList.remove('open');evcb.classList.remove('open');}
+  // auto-expand collapsible sections only if they have values
+  const _setOpen=(hdrId,bodyId,open)=>{
+    const h=document.getElementById(hdrId),b=document.getElementById(bodyId);
+    if(!h||!b) return;
+    h.classList.toggle('open',open); b.classList.toggle('open',open);
+  };
+  _setOpen('e-vorsorge-hdr','e-vorsorge-coll-body',(e.vorsorge_fragen||[]).length>0);
+  _setOpen('e-diag-hdr','e-diag-body',(e.diagnose_akut||[]).length>0||(e.diagnose_dauer||[]).length>0);
+  // EBM: hdr is the previousElementSibling of e-ebm-coll-body
+  const eecb2=document.getElementById('e-ebm-coll-body');
+  const eehdr2=eecb2?eecb2.previousElementSibling:null;
+  if(eehdr2&&eecb2){const o=(e.ebm_ziffern||[]).length>0;eehdr2.classList.toggle('open',o);eecb2.classList.toggle('open',o);}
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
@@ -792,9 +805,10 @@ async function saveEdit(){
   btn.disabled=true;btn.textContent='Speichert…';
   const j=parseInt(document.getElementById('e-alter-j').value)||0;
   const m=parseInt(document.getElementById('e-alter-m').value)||0;
+  const d=parseInt(document.getElementById('e-alter-d').value)||0;
   const payload={
     datum:document.getElementById('e-datum').value||null,
-    alter_j:j,alter_m:m,alter_ges:j*12+m,
+    alter_j:j,alter_m:m,alter_d:d,alter_ges:j*12+m,
     dauer:parseInt(document.getElementById('e-dauer').value)||10,
     grund:          editPickers.grund.getValues(),
     diagnose_akut:  editPickers.diagAkut.getValues(),
