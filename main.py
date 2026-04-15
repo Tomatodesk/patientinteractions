@@ -32,7 +32,7 @@ def init_db():
             )
         """)
         cols = [r[1] for r in db.execute("PRAGMA table_info(konsultationen)").fetchall()]
-        for col in ["diagnose_akut","diagnose_dauer","vorsorge_fragen"]:
+        for col in ["diagnose_akut","diagnose_dauer","vorsorge_fragen","ebm_ziffern"]:
             if col not in cols:
                 db.execute(f"ALTER TABLE konsultationen ADD COLUMN {col} TEXT DEFAULT ''")
         # migrate old field names
@@ -59,7 +59,7 @@ def _loads(v):
 
 def _row_to_dict(row):
     d = dict(row)
-    for f in ("grund","diagnose_akut","diagnose_dauer","massnahmen","vorsorge_fragen","begleitperson"):
+    for f in ("grund","diagnose_akut","diagnose_dauer","massnahmen","vorsorge_fragen","begleitperson","ebm_ziffern"):
         d[f] = _loads(d.get(f))
     d["mh"] = bool(d.get("mh", 0))
     return d
@@ -76,6 +76,7 @@ class KonsultationIn(BaseModel):
     massnahmen: Optional[List[str]] = []
     vorsorge_fragen: Optional[List[str]] = []
     begleitperson: Optional[List[str]] = []
+    ebm_ziffern: Optional[List[str]] = []
     mh: Optional[bool] = False
     notizen: Optional[str] = ""
 
@@ -84,16 +85,22 @@ def root():
     return FileResponse(os.path.join(os.path.dirname(__file__), "static", "index.html"))
 
 @app.get("/api/konsultationen")
-def list_konsultationen(q: str = ""):
+def list_konsultationen(q: str = "", sort: str = "datum_desc", von: str = "", bis: str = ""):
+    order = "datum ASC" if sort == "datum_asc" else "datum DESC"
+    conditions, params = [], []
+    if q:
+        like = f"%{q}%"
+        conditions.append("(datum LIKE ? OR grund LIKE ? OR diagnose_akut LIKE ? OR diagnose_dauer LIKE ? OR massnahmen LIKE ? OR notizen LIKE ? OR begleitperson LIKE ? OR vorsorge_fragen LIKE ? OR ebm_ziffern LIKE ?)")
+        params.extend([like]*9)
+    if von:
+        conditions.append("datum >= ?")
+        params.append(von)
+    if bis:
+        conditions.append("datum <= ?")
+        params.append(bis + "T23:59")
+    where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
     with get_db() as db:
-        if q:
-            like = f"%{q}%"
-            rows = db.execute(
-                "SELECT * FROM konsultationen WHERE grund LIKE ? OR diagnose_akut LIKE ? OR diagnose_dauer LIKE ? OR notizen LIKE ? OR begleitperson LIKE ? OR vorsorge_fragen LIKE ? ORDER BY id DESC",
-                (like,like,like,like,like,like)
-            ).fetchall()
-        else:
-            rows = db.execute("SELECT * FROM konsultationen ORDER BY id DESC").fetchall()
+        rows = db.execute(f"SELECT * FROM konsultationen {where} ORDER BY {order}", params).fetchall()
     return [_row_to_dict(r) for r in rows]
 
 @app.post("/api/konsultationen", status_code=201)
@@ -101,14 +108,14 @@ def create_konsultation(k: KonsultationIn):
     with get_db() as db:
         cur = db.execute("""
             INSERT INTO konsultationen
-              (datum,alter_j,alter_m,alter_ges,dauer,grund,diagnose_akut,diagnose_dauer,massnahmen,vorsorge_fragen,begleitperson,mh,notizen)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+              (datum,alter_j,alter_m,alter_ges,dauer,grund,diagnose_akut,diagnose_dauer,massnahmen,vorsorge_fragen,begleitperson,ebm_ziffern,mh,notizen)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         """, (
             k.datum or datetime.now().isoformat(timespec='minutes'),
             k.alter_j or 0, k.alter_m or 0, k.alter_ges or 0, k.dauer,
             _dumps(k.grund), _dumps(k.diagnose_akut), _dumps(k.diagnose_dauer),
             _dumps(k.massnahmen), _dumps(k.vorsorge_fragen), _dumps(k.begleitperson),
-            1 if k.mh else 0, k.notizen or ""
+            _dumps(k.ebm_ziffern), 1 if k.mh else 0, k.notizen or ""
         ))
         db.commit()
         row = db.execute("SELECT * FROM konsultationen WHERE id=?", (cur.lastrowid,)).fetchone()
@@ -122,14 +129,14 @@ def update_konsultation(entry_id: int, k: KonsultationIn):
         db.execute("""
             UPDATE konsultationen SET
               datum=?,alter_j=?,alter_m=?,alter_ges=?,dauer=?,
-              grund=?,diagnose_akut=?,diagnose_dauer=?,massnahmen=?,vorsorge_fragen=?,begleitperson=?,mh=?,notizen=?
+              grund=?,diagnose_akut=?,diagnose_dauer=?,massnahmen=?,vorsorge_fragen=?,begleitperson=?,ebm_ziffern=?,mh=?,notizen=?
             WHERE id=?
         """, (
             k.datum or datetime.now().isoformat(timespec='minutes'),
             k.alter_j or 0, k.alter_m or 0, k.alter_ges or 0, k.dauer,
             _dumps(k.grund), _dumps(k.diagnose_akut), _dumps(k.diagnose_dauer),
             _dumps(k.massnahmen), _dumps(k.vorsorge_fragen), _dumps(k.begleitperson),
-            1 if k.mh else 0, k.notizen or "", entry_id
+            _dumps(k.ebm_ziffern), 1 if k.mh else 0, k.notizen or "", entry_id
         ))
         db.commit()
         row = db.execute("SELECT * FROM konsultationen WHERE id=?", (entry_id,)).fetchone()
@@ -150,17 +157,18 @@ def get_stats():
     entries = [_row_to_dict(r) for r in rows]
     if not entries:
         return {"total":0,"avg_dauer":0,"mh_pct":0,"mh_count":0,"top_grund":None,"top_grund_count":0,
-                "alter_dist":{},"grund_counts":{},"dauer_buckets":{},
-                "diag_akut_counts":{},"diag_dauer_counts":{},"vorsorge_fragen_counts":{}}
+                "alter_dist":{},"grund_counts":{},"dauer_buckets":{},"massnahmen_counts":{},
+                "diag_akut_counts":{},"diag_dauer_counts":{},"elternfragen_counts":{},
+                "begleitperson_counts":{},"wochentag_dist":{},"ebm_counts":{}}
     durations = [e["dauer"] for e in entries if e.get("dauer")]
     avg_dauer = round(sum(durations)/len(durations),1) if durations else 0
     mh_count = sum(1 for e in entries if e.get("mh"))
-    def count_field(field):
+    def count_field(field, limit=12):
         counts = {}
         for e in entries:
             for v in (e.get(field) or []):
                 counts[v] = counts.get(v,0)+1
-        return dict(sorted(counts.items(), key=lambda x:-x[1])[:12])
+        return dict(sorted(counts.items(), key=lambda x:-x[1])[:limit])
     grund_counts = count_field("grund")
     top_grund = max(grund_counts, key=grund_counts.get) if grund_counts else None
     age_labels = ["< 1 J","1–2 J","2–4 J","4–6 J","6–9 J","9+ J"]
@@ -182,21 +190,36 @@ def get_stats():
         elif d<=20: dauer_buckets["11–20 min"]+=1
         elif d<=30: dauer_buckets["21–30 min"]+=1
         else: dauer_buckets[">30 min"]+=1
-    return {"total":len(entries),"avg_dauer":avg_dauer,
-            "mh_pct":round(mh_count/len(entries)*100),"mh_count":mh_count,
-            "top_grund":top_grund,"top_grund_count":grund_counts.get(top_grund,0),
-            "alter_dist":alter_dist,"grund_counts":grund_counts,"dauer_buckets":dauer_buckets,
-            "diag_akut_counts":count_field("diagnose_akut"),
-            "diag_dauer_counts":count_field("diagnose_dauer"),
-            "vorsorge_fragen_counts":count_field("vorsorge_fragen")}
+    wt_labels = ["Mo","Di","Mi","Do","Fr","Sa","So"]
+    wochentag_dist = {l:0 for l in wt_labels}
+    for e in entries:
+        try:
+            wt = datetime.fromisoformat(e["datum"]).weekday()
+            wochentag_dist[wt_labels[wt]] += 1
+        except: pass
+    # begleitperson: flatten and count
+    begl_counts = count_field("begleitperson", 8)
+    return {
+        "total":len(entries),"avg_dauer":avg_dauer,
+        "mh_pct":round(mh_count/len(entries)*100),"mh_count":mh_count,
+        "top_grund":top_grund,"top_grund_count":grund_counts.get(top_grund,0),
+        "alter_dist":alter_dist,"grund_counts":grund_counts,"dauer_buckets":dauer_buckets,
+        "diag_akut_counts":count_field("diagnose_akut"),
+        "diag_dauer_counts":count_field("diagnose_dauer"),
+        "massnahmen_counts":count_field("massnahmen"),
+        "elternfragen_counts":count_field("vorsorge_fragen"),
+        "begleitperson_counts":begl_counts,
+        "wochentag_dist":wochentag_dist,
+        "ebm_counts":count_field("ebm_ziffern"),
+    }
 
 @app.get("/api/vorschlaege")
 def get_vorschlaege():
     with get_db() as db:
-        rows = db.execute("SELECT grund,diagnose_akut,diagnose_dauer,massnahmen,vorsorge_fragen FROM konsultationen").fetchall()
-    gc,dac,ddc,mc,vfc = {},{},{},{},{}
+        rows = db.execute("SELECT grund,diagnose_akut,diagnose_dauer,massnahmen,vorsorge_fragen,ebm_ziffern FROM konsultationen").fetchall()
+    gc,dac,ddc,mc,vfc,ec = {},{},{},{},{},{}
     for row in rows:
-        for val,counts in [(row[0],gc),(row[1],dac),(row[2],ddc),(row[3],mc),(row[4],vfc)]:
+        for val,counts in [(row[0],gc),(row[1],dac),(row[2],ddc),(row[3],mc),(row[4],vfc),(row[5],ec)]:
             for item in _loads(val):
                 item=item.strip()
                 if item: counts[item]=counts.get(item,0)+1
@@ -207,7 +230,58 @@ def get_vorschlaege():
         "diagnose_dauer":  {"top":srt(ddc)[:10], "alle":srt(ddc)},
         "massnahmen":      {"top":srt(mc)[:10],  "alle":srt(mc)},
         "vorsorge_fragen": {"top":srt(vfc)[:10], "alle":srt(vfc)},
+        "ebm_ziffern":     {"top":srt(ec)[:10],  "alle":srt(ec)},
     }
+
+@app.get("/api/vorschlaege/kontext")
+def get_vorschlaege_kontext(grund: str = ""):
+    if not grund:
+        return {"diagnose_akut":{"top":[],"alle":[]},"diagnose_dauer":{"top":[],"alle":[]},"massnahmen":{"top":[],"alle":[]}}
+    gruende = {g.strip() for g in grund.split(",") if g.strip()}
+    with get_db() as db:
+        rows = db.execute("SELECT grund,diagnose_akut,diagnose_dauer,massnahmen FROM konsultationen").fetchall()
+    dac,ddc,mc = {},{},{}
+    for row in rows:
+        if not set(_loads(row[0])).intersection(gruende):
+            continue
+        for item in _loads(row[1]):
+            item=item.strip()
+            if item: dac[item]=dac.get(item,0)+1
+        for item in _loads(row[2]):
+            item=item.strip()
+            if item: ddc[item]=ddc.get(item,0)+1
+        for item in _loads(row[3]):
+            item=item.strip()
+            if item: mc[item]=mc.get(item,0)+1
+    srt = lambda d: [k for k,_ in sorted(d.items(),key=lambda x:-x[1])]
+    return {
+        "diagnose_akut":  {"top":srt(dac)[:10],"alle":srt(dac)},
+        "diagnose_dauer": {"top":srt(ddc)[:10],"alle":srt(ddc)},
+        "massnahmen":     {"top":srt(mc)[:10], "alle":srt(mc)},
+    }
+
+@app.get("/api/vorschlaege/ebm-kontext")
+def get_vorschlaege_ebm_kontext(grund: str = "", diagnose_akut: str = "", diagnose_dauer: str = "", massnahmen: str = ""):
+    ctx_sets = []
+    if grund:       ctx_sets.append(({g.strip() for g in grund.split(",") if g.strip()}, "grund"))
+    if diagnose_akut:  ctx_sets.append(({g.strip() for g in diagnose_akut.split(",") if g.strip()}, "diagnose_akut"))
+    if diagnose_dauer: ctx_sets.append(({g.strip() for g in diagnose_dauer.split(",") if g.strip()}, "diagnose_dauer"))
+    if massnahmen:     ctx_sets.append(({g.strip() for g in massnahmen.split(",") if g.strip()}, "massnahmen"))
+    if not ctx_sets:
+        return {"ebm_ziffern": {"top": [], "alle": []}}
+    with get_db() as db:
+        rows = db.execute("SELECT grund,diagnose_akut,diagnose_dauer,massnahmen,ebm_ziffern FROM konsultationen").fetchall()
+    ec = {}
+    for row in rows:
+        row_data = {"grund": set(_loads(row[0])), "diagnose_akut": set(_loads(row[1])),
+                    "diagnose_dauer": set(_loads(row[2])), "massnahmen": set(_loads(row[3]))}
+        match = any(row_data[field].intersection(vals) for vals, field in ctx_sets)
+        if not match: continue
+        for item in _loads(row[4]):
+            item = item.strip()
+            if item: ec[item] = ec.get(item, 0) + 1
+    srt = lambda d: [k for k, _ in sorted(d.items(), key=lambda x: -x[1])]
+    return {"ebm_ziffern": {"top": srt(ec)[:10], "alle": srt(ec)}}
 
 @app.get("/api/export/csv")
 def export_csv():
@@ -220,7 +294,7 @@ def export_csv():
     output.write('\ufeff')
     writer = csv.writer(output, delimiter=';')
     writer.writerow(["ID","Datum","Alter (J)","Alter (M)","Alter (Ges. Mo.)","Dauer (min)",
-                     "Grund","Diagnose (akut)","Diagnose (Dauer)","Maßnahmen","Vorsorge-Fragen","Begleitperson","MH","Notizen"])
+                     "Grund","Diagnose (akut)","Diagnose (Dauer)","Maßnahmen","Elternfragen","Begleitperson","EBM-Ziffern","MH","Notizen"])
     for e in entries:
         writer.writerow([e["id"],e.get("datum",""),e.get("alter_j",0),e.get("alter_m",0),
             e.get("alter_ges",0),e.get("dauer",""),
@@ -230,6 +304,7 @@ def export_csv():
             ", ".join(e.get("massnahmen") or []),
             ", ".join(e.get("vorsorge_fragen") or []),
             ", ".join(e.get("begleitperson") or []),
+            ", ".join(e.get("ebm_ziffern") or []),
             "Ja" if e.get("mh") else "Nein",
             e.get("notizen","")])
     output.seek(0)

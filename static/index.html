@@ -106,14 +106,16 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 .btn-p:active{opacity:.85}.btn-p:disabled{opacity:.5}
 .btn-s{width:100%;background:transparent;color:var(--ink2);border:1.5px solid var(--border2);border-radius:var(--r);padding:14px;font-family:var(--sans);font-size:15px;cursor:pointer;min-height:50px;-webkit-appearance:none}
 .form-actions{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.weiter-btn{display:block;width:100%;text-align:right;background:none;border:none;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--accent);padding:8px 2px 0;cursor:pointer;letter-spacing:.02em}
 /* toast */
 .toast{position:fixed;top:16px;left:16px;right:16px;background:var(--ink);color:#fff;padding:14px 18px;border-radius:var(--r);font-size:14px;font-weight:500;opacity:0;transform:translateY(-8px);transition:all .25s;pointer-events:none;z-index:999;text-align:center}
 .toast.show{opacity:1;transform:translateY(0)}.toast.err{background:var(--red)}
 /* entry cards */
-.search-bar{display:flex;gap:10px;margin-bottom:12px}
+.search-bar{display:flex;gap:8px;margin-bottom:8px}
 .search-input{flex:1;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 14px;font-family:var(--sans);font-size:16px;color:var(--ink);outline:none;-webkit-appearance:none}
 .search-input:focus{border-color:var(--accent)}
-.btn-sm{background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 14px;font-family:var(--mono);font-size:12px;color:var(--ink2);cursor:pointer}
+.btn-sm{background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px 14px;font-family:var(--mono);font-size:12px;color:var(--ink2);cursor:pointer;white-space:nowrap}
+.results-meta{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-bottom:10px;padding-left:2px}
 .entry-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:10px}
 .ec-date{font-family:var(--mono);font-size:12px;color:var(--ink3);margin-bottom:2px}
 .ec-age{font-size:14px;font-weight:500;margin-bottom:8px}
@@ -147,6 +149,7 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
 .chart-card.accent-teal{border-left:3px solid var(--teal)}
 .chart-card.accent-red{border-left:3px solid var(--red)}
 .chart-card.accent-purple{border-left:3px solid var(--purple)}
+.chart-card.accent-green{border-left:3px solid var(--accent)}
 .chart-title{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-bottom:14px}
 .section-hdr{font-size:13px;font-weight:600;color:var(--ink2);margin:20px 0 10px;padding-left:2px}
 .empty-state{text-align:center;padding:60px 20px;color:var(--ink3);font-size:14px}
@@ -166,28 +169,42 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
   <!-- ERFASSEN -->
   <div class="page active" id="page-erfassen">
     <form id="entry-form" autocomplete="off">
-      <div class="card">
+      <div class="card" id="card-datum">
         <div class="card-title">Zeitpunkt & Dauer</div>
         <div class="two-col">
-          <div class="field"><label>Datum & Zeit</label><input type="datetime-local" id="f-datum"></div>
+          <div class="field">
+            <label style="display:flex;justify-content:space-between;align-items:center">
+              Datum & Zeit
+              <button type="button" id="last-date-btn" onclick="applyLastDate()" style="display:none;font-size:11px;font-weight:500;color:var(--accent);background:var(--accent-l);border:none;border-radius:6px;padding:3px 8px;cursor:pointer;font-family:var(--sans)">↩ <span id="last-date-label"></span></button>
+            </label>
+            <input type="datetime-local" id="f-datum">
+          </div>
           <div class="field"><label>Dauer (min)</label><input type="number" id="f-dauer" min="1" max="180" placeholder="10" inputmode="numeric"></div>
         </div>
+        <button type="button" class="weiter-btn" onclick="scrollToNext(this)">Weiter ↓</button>
       </div>
-      <div class="card">
+      <div class="card" id="card-alter">
         <div class="card-title">Alter des Patienten</div>
         <div class="three-col">
           <div class="field"><label>Jahre</label><input type="number" id="f-alter-j" min="0" max="18" placeholder="0" oninput="calcAge('f')" inputmode="numeric"></div>
           <div class="field"><label>Monate</label><input type="number" id="f-alter-m" min="0" max="11" placeholder="0" oninput="calcAge('f')" inputmode="numeric"></div>
           <div class="field"><label>Ergebnis</label><div class="age-display" id="f-age-display">—</div></div>
         </div>
+        <button type="button" class="weiter-btn" onclick="scrollToNext(this)">Weiter ↓</button>
       </div>
-      <div class="card">
+      <div class="card" id="card-grund">
         <div class="card-title">Konsultationsgrund *</div>
         <div id="picker-grund"></div>
+        <button type="button" class="weiter-btn" onclick="scrollToNext(this)">Weiter ↓</button>
       </div>
-      <div class="vorsorge-card" id="vorsorge-card">
-        <div class="vorsorge-badge">🩺 Fragen der Eltern</div>
-        <div id="picker-vorsorge"></div>
+      <div class="card">
+        <div class="coll-hdr" onclick="toggleColl(this)">
+          <div class="card-title">Elternfragen</div>
+          <span class="coll-arrow">▼</span>
+        </div>
+        <div class="coll-body" id="vorsorge-coll-body">
+          <div id="picker-vorsorge"></div>
+        </div>
       </div>
       <div class="card">
         <div class="coll-hdr" onclick="toggleColl(this)">
@@ -206,9 +223,19 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
           </div>
         </div>
       </div>
-      <div class="card">
+      <div class="card" id="card-mass">
         <div class="card-title">Maßnahmen</div>
         <div id="picker-mass"></div>
+        <button type="button" class="weiter-btn" onclick="scrollToNext(this)">Weiter ↓</button>
+      </div>
+      <div class="card">
+        <div class="coll-hdr" onclick="toggleColl(this)">
+          <div class="card-title">EBM-Ziffern</div>
+          <span class="coll-arrow">▼</span>
+        </div>
+        <div class="coll-body">
+          <div id="picker-ebm"></div>
+        </div>
       </div>
       <div class="card">
         <div class="card-title">Begleitperson</div>
@@ -246,9 +273,11 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
   <!-- EINTRÄGE -->
   <div class="page" id="page-tabelle">
     <div class="search-bar">
-      <input class="search-input" type="text" id="search-input" placeholder="Suchen…" oninput="searchEntries()">
-      <button class="btn-sm" onclick="window.location='/api/export/csv'">↓ CSV</button>
+      <input class="search-input" type="text" id="search-input" placeholder="Suchen… (Datum, Diagnose, Grund…)" oninput="searchEntries()">
+      <button class="btn-sm" id="sort-btn" onclick="toggleSort()" title="Sortierung">↓ Neu</button>
+      <button class="btn-sm" onclick="window.location='/api/export/csv'">CSV</button>
     </div>
+    <div class="results-meta" id="results-meta"></div>
     <div id="table-container"><div class="loading">Wird geladen…</div></div>
   </div>
 
@@ -290,9 +319,14 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
         <div class="card-title" style="margin-bottom:10px">Konsultationsgrund</div>
         <div id="e-picker-grund"></div>
       </div>
-      <div id="e-vorsorge-section" style="display:none;margin-bottom:14px;background:var(--teal-l);border-radius:var(--rl);border:2px solid var(--teal);padding:14px">
-        <div class="vorsorge-badge" style="margin-bottom:10px">🩺 Fragen der Eltern</div>
-        <div id="e-picker-vorsorge"></div>
+      <div style="margin-bottom:14px">
+        <div class="coll-hdr" id="e-vorsorge-hdr" onclick="toggleColl(this)" style="margin-bottom:0">
+          <div class="card-title" style="margin-bottom:0">Elternfragen</div>
+          <span class="coll-arrow">▼</span>
+        </div>
+        <div class="coll-body" id="e-vorsorge-coll-body">
+          <div id="e-picker-vorsorge" style="margin-top:12px"></div>
+        </div>
       </div>
       <div style="margin-bottom:14px">
         <div class="coll-hdr" onclick="toggleColl(this)" style="margin-bottom:0">
@@ -314,6 +348,15 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
       <div style="margin-bottom:14px">
         <div class="card-title" style="margin-bottom:10px">Maßnahmen</div>
         <div id="e-picker-mass"></div>
+      </div>
+      <div style="margin-bottom:14px">
+        <div class="coll-hdr" onclick="toggleColl(this)" style="margin-bottom:0">
+          <div class="card-title" style="margin-bottom:0">EBM-Ziffern</div>
+          <span class="coll-arrow">▼</span>
+        </div>
+        <div class="coll-body" id="e-ebm-coll-body">
+          <div id="e-picker-ebm" style="margin-top:12px"></div>
+        </div>
       </div>
       <div style="margin-bottom:14px">
         <div class="card-title" style="margin-bottom:10px">Begleitperson</div>
@@ -352,14 +395,16 @@ const VORSORGE_SET = new Set(['U1','U2','U3','U4','U5','U6','U7','U7a','U8','U9'
 
 let vorschlaege = {
   grund:{top:[],alle:[]}, diagnose_akut:{top:[],alle:[]},
-  diagnose_dauer:{top:[],alle:[]}, massnahmen:{top:[],alle:[]}, vorsorge_fragen:{top:[],alle:[]},
+  diagnose_dauer:{top:[],alle:[]}, massnahmen:{top:[],alle:[]}, vorsorge_fragen:{top:[],alle:[]}, ebm_ziffern:{top:[],alle:[]},
 };
+let ctxVorschlaege = null, ctxTimer = null;
 const DEFAULTS = {
   grund: ['Fieber','Husten','Impfung','Bauchschmerzen','Schnupfen','Erbrechen','Schlaf','Sprache','Hörtest','Hyposensibilisierung','U1','U2','U3','U4','U5','U6','U7','U7a','U8','U9','U10','U11','J1','J2','BE Kontrolle','Überweisung'],
   diagnose_akut: ['Viraler Infekt','Otitis media','Bronchitis','Gastroenteritis','Laryngitis','Exanthem','Fieber unklarer Genese','Impfreaktion','Konjunktivitis','Harnwegsinfekt'],
   diagnose_dauer: ['Asthma','Atopisches Ekzem','Allergische Rhinitis','Adipositas','Entwicklungsverzögerung','Epilepsie','Anämie','Diabetes mellitus Typ 1','Zöliakie','Hypothyreose'],
   massnahmen: ['Beratung','Impfung','Ausschluss','Keine','Ibuprofen','Paracetamol','ATB','Creme','Nasentropfen','Blutentnahme','Überweisung','Kontrolle','Schädelsono','Salbutamol'],
   vorsorge_fragen: ['Ernährung','Schlaf','Sprachentwicklung','Motorik','Sozialverhalten','Impfungen','Zähne / Zahnen','Stuhlgang','Gewicht / Wachstum','Sehen / Hören','Allergien','Hautpflege','Kindergarten / Schule','Geschwister-Gesundheit','Reiseimpfung'],
+  ebm_ziffern: ['04000','04001','04004','04030','04040','04230','04231','04241','04380','01600'],
 };
 
 // ── Entry store (fixes openEdit with special chars) ───────────────────────────
@@ -376,6 +421,10 @@ class TagPicker {
     this._render();
   }
   get _data() {
+    if(ctxVorschlaege && ctxVorschlaege[this.type]) {
+      const ctx=ctxVorschlaege[this.type];
+      if(ctx.top.length||ctx.alle.length) return ctx;
+    }
     const v = vorschlaege[this.type];
     return (v&&(v.top.length||v.alle.length)) ? v : {top:(DEFAULTS[this.type]||[]).slice(0,10),alle:DEFAULTS[this.type]||[]};
   }
@@ -400,8 +449,11 @@ class TagPicker {
     this._add.addEventListener('click',()=>{const v=this._inp.value.trim();if(v)this._select(v);});
     this._renderTop();
     if(this.pid==='picker-grund'||this.pid==='e-picker-grund') {
-      const cb=()=>checkVorsorge(this.pid);
-      this._onSelectCb=cb;
+      this._onSelectCb=()=>onGrundChange(this.pid);
+    }
+    const ebmTriggers=['picker-diag-akut','picker-diag-dauer','picker-mass','e-picker-diag-akut','e-picker-diag-dauer','e-picker-mass'];
+    if(ebmTriggers.includes(this.pid)){
+      this._onSelectCb=()=>onEbmContextChange(this.pid);
     }
   }
   _renderTop() {
@@ -448,16 +500,70 @@ function tpToggle(el){const p=_pickers[el.dataset.pid];if(p)p._toggle(decodeURIC
 function tpRemove(el){const p=_pickers[el.dataset.pid];if(p)p._deselect(decodeURIComponent(el.dataset.v));}
 function tpSelect(el){const p=_pickers[el.dataset.pid];if(p)p._select(decodeURIComponent(el.dataset.v));}
 
-// ── Vorsorge visibility ───────────────────────────────────────────────────────
-function checkVorsorge(pid) {
-  const p=_pickers[pid]; if(!p) return;
-  const has=[...p.selected].some(v=>VORSORGE_SET.has(v));
-  if(pid==='picker-grund') document.getElementById('vorsorge-card').classList.toggle('visible',has);
-  else document.getElementById('e-vorsorge-section').style.display=has?'block':'none';
-}
 
 // ── Collapsible ───────────────────────────────────────────────────────────────
 function toggleColl(hdr){hdr.classList.toggle('open');hdr.nextElementSibling.classList.toggle('open');}
+
+// ── Weiter-Button ─────────────────────────────────────────────────────────────
+function scrollToNext(btn) {
+  const card=btn.closest('.card');
+  const allCards=Array.from(document.querySelectorAll('#page-erfassen .card'));
+  const idx=allCards.indexOf(card);
+  const next=allCards[idx+1];
+  if(next) next.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── EBM Kontext (Grund + Diagnose + Maßnahmen) ────────────────────────────────
+let ebmCtxTimer=null;
+function onEbmContextChange(pid) {
+  const isMain=!pid.startsWith('e-');
+  const pickers=isMain?mainPickers:editPickers;
+  clearTimeout(ebmCtxTimer);
+  ebmCtxTimer=setTimeout(async()=>{
+    const params=new URLSearchParams();
+    const gv=(pickers.grund?.getValues()||[]);
+    const dav=(pickers.diagAkut?.getValues()||[]);
+    const ddv=(pickers.diagDauer?.getValues()||[]);
+    const mv=(pickers.mass?.getValues()||[]);
+    if(!gv.length&&!dav.length&&!ddv.length&&!mv.length){
+      if(pickers.ebm) pickers.ebm._renderTop();
+      return;
+    }
+    if(gv.length) params.set('grund',gv.join(','));
+    if(dav.length) params.set('diagnose_akut',dav.join(','));
+    if(ddv.length) params.set('diagnose_dauer',ddv.join(','));
+    if(mv.length) params.set('massnahmen',mv.join(','));
+    try{
+      const r=await fetch(`${API}/api/vorschlaege/ebm-kontext?${params}`);
+      const data=await r.json();
+      if(ctxVorschlaege) Object.assign(ctxVorschlaege,data);
+      else ctxVorschlaege=data;
+    }catch{}
+    if(pickers.ebm) pickers.ebm._renderTop();
+  },300);
+}
+
+// ── Kontext-Vorschläge (basierend auf Grund) ─────────────────────────────────
+function onGrundChange(pid) {
+  const p=_pickers[pid]; if(!p) return;
+  const isMain=pid==='picker-grund';
+  const pickers=isMain?mainPickers:editPickers;
+  clearTimeout(ctxTimer);
+  const values=[...p.selected];
+  if(!values.length){
+    ctxVorschlaege=null;
+    [pickers.diagAkut,pickers.diagDauer,pickers.mass].forEach(pk=>{if(pk)pk._renderTop();});
+    return;
+  }
+  ctxTimer=setTimeout(async()=>{
+    try{
+      const r=await fetch(`${API}/api/vorschlaege/kontext?grund=${encodeURIComponent(values.join(','))}`);
+      ctxVorschlaege=await r.json();
+    }catch{ctxVorschlaege=null;}
+    [pickers.diagAkut,pickers.diagDauer,pickers.mass].forEach(pk=>{if(pk)pk._renderTop();});
+    onEbmContextChange(pid);
+  },300);
+}
 
 // ── Multi-select tags (begleitperson) ─────────────────────────────────────────
 function toggleMulti(el){el.classList.toggle('on');}
@@ -479,12 +585,27 @@ async function init() {
   mainPickers.diagAkut  =new TagPicker('picker-diag-akut',  'diagnose_akut','akut');
   mainPickers.diagDauer =new TagPicker('picker-diag-dauer', 'diagnose_dauer','dauer');
   mainPickers.mass      =new TagPicker('picker-mass',       'massnahmen');
+  mainPickers.ebm       =new TagPicker('picker-ebm',        'ebm_ziffern');
 }
 
 function initDatetime(){
   const now=new Date(),p=n=>String(n).padStart(2,'0');
   document.getElementById('f-datum').value=`${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}T${p(now.getHours())}:${p(now.getMinutes())}`;
   document.getElementById('f-dauer').value='10';
+  // show last-date button if a previous date is stored
+  const last=localStorage.getItem('lastDatum');
+  const btn=document.getElementById('last-date-btn');
+  if(last){
+    const d=new Date(last),p2=n=>String(n).padStart(2,'0');
+    document.getElementById('last-date-label').textContent=`${p2(d.getDate())}.${p2(d.getMonth()+1)}. ${p2(d.getHours())}:${p2(d.getMinutes())}`;
+    btn.style.display='inline-block';
+  } else {
+    btn.style.display='none';
+  }
+}
+function applyLastDate(){
+  const last=localStorage.getItem('lastDatum');
+  if(last) document.getElementById('f-datum').value=last;
 }
 
 // ── Nav ───────────────────────────────────────────────────────────────────────
@@ -511,8 +632,8 @@ function resetForm(){
   document.getElementById('mig-toggle').classList.remove('on');
   document.getElementById('mig-label').textContent='Nein';
   document.getElementById('f-age-display').textContent='—';
+  ctxVorschlaege=null;
   Object.values(mainPickers).forEach(p=>p.reset());
-  document.getElementById('vorsorge-card').classList.remove('visible');
   initDatetime();
 }
 
@@ -532,6 +653,7 @@ document.getElementById('entry-form').addEventListener('submit', async function(
     diagnose_dauer: mainPickers.diagDauer.getValues(),
     massnahmen:     mainPickers.mass.getValues(),
     vorsorge_fragen:mainPickers.vorsorge.getValues(),
+    ebm_ziffern:    mainPickers.ebm.getValues(),
     begleitperson:  getMultiActive('begl-tags'),
     mh:document.getElementById('mig-toggle').classList.contains('on'),
     notizen:document.getElementById('f-notizen').value.trim()
@@ -541,6 +663,7 @@ document.getElementById('entry-form').addEventListener('submit', async function(
   try{
     const res=await fetch(`${API}/api/konsultationen`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!res.ok) throw new Error();
+    localStorage.setItem('lastDatum', payload.datum);
     try{const vr=await fetch(`${API}/api/vorschlaege`);vorschlaege=await vr.json();Object.values(mainPickers).forEach(p=>p._renderTop());}catch{}
     resetForm();showToast('✓ Gespeichert');updateCount();
   }catch{showToast('Fehler beim Speichern',true);}
@@ -548,17 +671,32 @@ document.getElementById('entry-form').addEventListener('submit', async function(
 });
 
 // ── Einträge ──────────────────────────────────────────────────────────────────
-async function loadTable(q=''){
+let currentSort='datum_desc';
+
+async function loadTable(){
   const c=document.getElementById('table-container');
+  const q=document.getElementById('search-input')?.value||'';
+  const params=new URLSearchParams({sort:currentSort});
+  if(q) params.set('q',q);
   try{
-    const res=await fetch(`${API}/api/konsultationen${q?'?q='+encodeURIComponent(q):''}`);
+    const res=await fetch(`${API}/api/konsultationen?${params}`);
     const data=await res.json();
-    // store entries for safe modal lookup
     data.forEach(e=>_entryStore[e.id]=e);
-    if(!data.length){c.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>Noch keine Einträge.</div>';return;}
+    const meta=document.getElementById('results-meta');
+    if(meta) meta.textContent=data.length?`${data.length} Einträge`:'';
+    if(!data.length){c.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>Keine Einträge gefunden.</div>';return;}
     c.innerHTML=data.map(cardHtml).join('');
   }catch{c.innerHTML='<div class="empty-state">Fehler beim Laden.</div>';}
 }
+
+function toggleSort(){
+  currentSort=currentSort==='datum_desc'?'datum_asc':'datum_desc';
+  const btn=document.getElementById('sort-btn');
+  if(btn) btn.textContent=currentSort==='datum_desc'?'↓ Neu':'↑ Alt';
+  loadTable();
+}
+
+
 
 function cardHtml(e){
   const d=e.datum?new Date(e.datum):null,p=n=>String(n).padStart(2,'0');
@@ -569,6 +707,7 @@ function cardHtml(e){
   const mass=(e.massnahmen||[]).join(', ');
   const vf=(e.vorsorge_fragen||[]).join(', ');
   const begl=(e.begleitperson||[]).join(', ');
+  const ebm=(e.ebm_ziffern||[]).join(', ');
   // Use id-based lookup instead of inline JSON to avoid quoting issues
   return `<div class="entry-card">
     <div class="ec-date">${dateStr}</div>
@@ -576,10 +715,11 @@ function cardHtml(e){
     <div class="ec-grund">${(e.grund||[]).join(', ')||'—'}</div>
     ${akut?`<div style="font-size:13px;margin-bottom:6px"><span class="badge b-r">Akut</span> <span style="color:var(--ink2)">${akut}</span></div>`:''}
     ${dauer?`<div style="font-size:13px;margin-bottom:6px"><span class="badge b-p">Dauer</span> <span style="color:var(--ink2)">${dauer}</span></div>`:''}
-    ${vf?`<div style="font-size:13px;margin-bottom:8px"><span class="badge b-t">🩺 Vorsorge</span> <span style="color:var(--ink2)">${vf}</span></div>`:''}
+    ${vf?`<div style="font-size:13px;margin-bottom:8px"><span class="badge b-t">🩺 Elternfragen</span> <span style="color:var(--ink2)">${vf}</span></div>`:''}
     <div class="ec-meta">
       <span class="badge b-y">${e.dauer??'—'} min</span>
       ${mass?`<span class="badge b-g">${mass}</span>`:''}
+      ${ebm?`<span class="badge b-gr">EBM: ${ebm}</span>`:''}
       ${begl?`<span class="badge b-gr">${begl}</span>`:''}
       ${e.mh?'<span class="badge b-r">MH</span>':''}
     </div>
@@ -593,13 +733,13 @@ function cardHtml(e){
 
 function searchEntries(){
   clearTimeout(searchTimer);
-  searchTimer=setTimeout(()=>loadTable(document.getElementById('search-input').value),300);
+  searchTimer=setTimeout(()=>loadTable(),300);
 }
 async function deleteEntry(id){
   if(!confirm('Eintrag löschen?')) return;
   await fetch(`${API}/api/konsultationen/${id}`,{method:'DELETE'});
   delete _entryStore[id];
-  loadTable(document.getElementById('search-input')?.value||'');
+  loadTable();
   updateCount();
 }
 
@@ -625,12 +765,24 @@ function openEdit(id){
     editPickers.diagAkut  =new TagPicker('e-picker-diag-akut',  'diagnose_akut','akut');
     editPickers.diagDauer =new TagPicker('e-picker-diag-dauer', 'diagnose_dauer','dauer');
     editPickers.mass      =new TagPicker('e-picker-mass',       'massnahmen');
+    editPickers.ebm       =new TagPicker('e-picker-ebm',        'ebm_ziffern');
   }
   editPickers.grund.setValues(e.grund||[]);
   editPickers.vorsorge.setValues(e.vorsorge_fragen||[]);
   editPickers.diagAkut.setValues(e.diagnose_akut||[]);
   editPickers.diagDauer.setValues(e.diagnose_dauer||[]);
   editPickers.mass.setValues(e.massnahmen||[]);
+  editPickers.ebm.setValues(e.ebm_ziffern||[]);
+  // auto-expand EBM if it has values
+  const eecb=document.getElementById('e-ebm-coll-body');
+  const eehdr=eecb?eecb.previousElementSibling:null;
+  if((e.ebm_ziffern||[]).length>0&&eehdr){eehdr.classList.add('open');eecb.classList.add('open');}
+  else if(eehdr){eehdr.classList.remove('open');eecb.classList.remove('open');}
+  // auto-expand Elternfragen if it has values
+  const evh=document.getElementById('e-vorsorge-hdr');
+  const evcb=document.getElementById('e-vorsorge-coll-body');
+  if((e.vorsorge_fragen||[]).length>0){evh.classList.add('open');evcb.classList.add('open');}
+  else{evh.classList.remove('open');evcb.classList.remove('open');}
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
@@ -649,6 +801,7 @@ async function saveEdit(){
     diagnose_dauer: editPickers.diagDauer.getValues(),
     massnahmen:     editPickers.mass.getValues(),
     vorsorge_fragen:editPickers.vorsorge.getValues(),
+    ebm_ziffern:    editPickers.ebm.getValues(),
     begleitperson:  getMultiActive('e-begl-tags'),
     mh:document.getElementById('e-mig-toggle').classList.contains('on'),
     notizen:document.getElementById('e-notizen').value.trim()
@@ -658,14 +811,14 @@ async function saveEdit(){
     if(!res.ok) throw new Error();
     try{const vr=await fetch(`${API}/api/vorschlaege`);vorschlaege=await vr.json();}catch{}
     closeModalDirect();
-    loadTable(document.getElementById('search-input')?.value||'');
+    loadTable();
     showToast('✓ Gespeichert');
   }catch{showToast('Fehler beim Speichern',true);}
   finally{btn.disabled=false;btn.textContent='Änderungen speichern';}
 }
 
 function closeModal(e){if(e.target===document.getElementById('modal-overlay'))closeModalDirect();}
-function closeModalDirect(){document.getElementById('modal-overlay').classList.remove('open');document.body.style.overflow='';}
+function closeModalDirect(){document.getElementById('modal-overlay').classList.remove('open');document.body.style.overflow='';ctxVorschlaege=null;}
 
 // ── Analyse ───────────────────────────────────────────────────────────────────
 async function loadAnalyse(){
@@ -675,7 +828,11 @@ async function loadAnalyse(){
     if(s.total===0){c.innerHTML='<div class="empty-state"><div class="empty-icon">◎</div>Noch keine Daten.</div>';return;}
     const hasDA=Object.keys(s.diag_akut_counts||{}).length>0;
     const hasDD=Object.keys(s.diag_dauer_counts||{}).length>0;
-    const hasVF=Object.keys(s.vorsorge_fragen_counts||{}).length>0;
+    const hasEF=Object.keys(s.elternfragen_counts||{}).length>0;
+    const hasEBM=Object.keys(s.ebm_counts||{}).length>0;
+    const hasMass=Object.keys(s.massnahmen_counts||{}).length>0;
+    const hasBegl=Object.keys(s.begleitperson_counts||{}).length>0;
+    const nGrund=Object.keys(s.grund_counts||{}).length;
     c.innerHTML=`
       <div class="stats-row">
         <div class="stat-card"><div class="stat-label">Konsultationen</div><div class="stat-value">${s.total}</div></div>
@@ -685,24 +842,33 @@ async function loadAnalyse(){
       </div>
       <div class="section-hdr">Übersicht</div>
       <div class="chart-card"><div class="chart-title">Altersverteilung</div><div style="position:relative;height:200px"><canvas id="ca"></canvas></div></div>
-      <div class="chart-card"><div class="chart-title">Häufigste Gründe</div><div style="position:relative;height:${Math.max(180,Object.keys(s.grund_counts).length*34+40)}px"><canvas id="cg"></canvas></div></div>
-      <div class="chart-card"><div class="chart-title">Dauer-Verteilung</div><div style="position:relative;height:200px"><canvas id="cd"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Wochentag-Verteilung</div><div style="position:relative;height:180px"><canvas id="cwt"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Dauer-Verteilung</div><div style="position:relative;height:180px"><canvas id="cd"></canvas></div></div>
+      <div class="section-hdr">Gründe & Maßnahmen</div>
+      <div class="chart-card"><div class="chart-title">Häufigste Gründe</div><div style="position:relative;height:${Math.max(180,nGrund*34+40)}px"><canvas id="cg"></canvas></div></div>
+      ${hasMass?`<div class="chart-card accent-green"><div class="chart-title">Maßnahmen</div><div style="position:relative;height:${Math.max(160,Object.keys(s.massnahmen_counts).length*32+40)}px"><canvas id="cm"></canvas></div></div>`:''}
       ${hasDA||hasDD?'<div class="section-hdr">Diagnosen</div>':''}
       ${hasDA?`<div class="chart-card accent-red"><div class="chart-title">Akutdiagnosen</div><div style="position:relative;height:${Math.max(160,Object.keys(s.diag_akut_counts).length*32+40)}px"><canvas id="cda"></canvas></div></div>`:''}
       ${hasDD?`<div class="chart-card accent-purple"><div class="chart-title">Dauerdiagnosen</div><div style="position:relative;height:${Math.max(160,Object.keys(s.diag_dauer_counts).length*32+40)}px"><canvas id="cdd"></canvas></div></div>`:''}
-      ${hasVF?`<div class="section-hdr">Vorsorge</div><div class="chart-card accent-teal"><div class="chart-title">Häufige Elternfragen</div><div style="position:relative;height:${Math.max(180,Object.keys(s.vorsorge_fragen_counts).length*32+40)}px"><canvas id="cvf"></canvas></div></div>`:''}
+      ${hasEF?`<div class="section-hdr">Elternfragen</div><div class="chart-card accent-teal"><div class="chart-title">Häufige Elternfragen</div><div style="position:relative;height:${Math.max(180,Object.keys(s.elternfragen_counts).length*32+40)}px"><canvas id="cvf"></canvas></div></div>`:''}
+      ${hasEBM?`<div class="section-hdr">EBM</div><div class="chart-card"><div class="chart-title">EBM-Ziffern</div><div style="position:relative;height:${Math.max(160,Object.keys(s.ebm_counts).length*32+40)}px"><canvas id="cebm"></canvas></div></div>`:''}
+      ${hasBegl?`<div class="section-hdr">Praxis</div><div class="chart-card"><div class="chart-title">Begleitperson</div><div style="position:relative;height:200px"><canvas id="cbegl"></canvas></div></div>`:''}
     `;
     const tc='#9E9889',gc='rgba(0,0,0,.06)';
-    Object.values(chartInstances).forEach(c=>c.destroy());chartInstances={};
+    Object.values(chartInstances).forEach(ch=>ch.destroy());chartInstances={};
     const barH=(id,labels,data,color)=>new Chart(document.getElementById(id),{type:'bar',data:{labels,datasets:[{data,backgroundColor:color,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true}}}});
     const barY=(id,labels,data,color)=>new Chart(document.getElementById(id),{type:'bar',data:{labels,datasets:[{data,backgroundColor:color,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc},beginAtZero:true},y:{ticks:{color:tc,font:{size:10}},grid:{color:'transparent'}}}}});
     chartInstances.a=barH('ca',Object.keys(s.alter_dist),Object.values(s.alter_dist),'#2A5C45');
-    const tg=Object.entries(s.grund_counts).slice(0,10);
-    chartInstances.g=barY('cg',tg.map(g=>g[0]),tg.map(g=>g[1]),'#5C8A2A');
+    chartInstances.wt=barH('cwt',Object.keys(s.wochentag_dist),Object.values(s.wochentag_dist),'#5C6A8A');
     chartInstances.d=barH('cd',Object.keys(s.dauer_buckets),Object.values(s.dauer_buckets),'#C94B1E');
-    if(hasDA){const e=Object.entries(s.diag_akut_counts).slice(0,10);chartInstances.da=barY('cda',e.map(x=>x[0]),e.map(x=>x[1]),'#C94B1E');}
-    if(hasDD){const e=Object.entries(s.diag_dauer_counts).slice(0,10);chartInstances.dd=barY('cdd',e.map(x=>x[0]),e.map(x=>x[1]),'#6B3FA0');}
-    if(hasVF){const e=Object.entries(s.vorsorge_fragen_counts).slice(0,12);chartInstances.vf=barY('cvf',e.map(x=>x[0]),e.map(x=>x[1]),'#0F6E6E');}
+    const tg=Object.entries(s.grund_counts).slice(0,12);
+    chartInstances.g=barY('cg',tg.map(g=>g[0]),tg.map(g=>g[1]),'#5C8A2A');
+    if(hasMass){const e=Object.entries(s.massnahmen_counts).slice(0,12);chartInstances.m=barY('cm',e.map(x=>x[0]),e.map(x=>x[1]),'#2A5C45');}
+    if(hasDA){const e=Object.entries(s.diag_akut_counts).slice(0,12);chartInstances.da=barY('cda',e.map(x=>x[0]),e.map(x=>x[1]),'#C94B1E');}
+    if(hasDD){const e=Object.entries(s.diag_dauer_counts).slice(0,12);chartInstances.dd=barY('cdd',e.map(x=>x[0]),e.map(x=>x[1]),'#6B3FA0');}
+    if(hasEF){const e=Object.entries(s.elternfragen_counts).slice(0,12);chartInstances.vf=barY('cvf',e.map(x=>x[0]),e.map(x=>x[1]),'#0F6E6E');}
+    if(hasEBM){const e=Object.entries(s.ebm_counts).slice(0,12);chartInstances.ebm=barY('cebm',e.map(x=>x[0]),e.map(x=>x[1]),'#8A5C2A');}
+    if(hasBegl){const e=Object.entries(s.begleitperson_counts);chartInstances.begl=barH('cbegl',e.map(x=>x[0]),e.map(x=>x[1]),'#6B6659');}
   }catch(err){c.innerHTML='<div class="empty-state">Fehler beim Laden.</div>';console.error(err);}
 }
 
