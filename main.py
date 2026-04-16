@@ -195,23 +195,19 @@ def get_stats():
         else: dauer_buckets[">30 min"]+=1
     wt_labels = ["Mo","Di","Mi","Do","Fr","Sa","So"]
     wochentag_dist = {l:0 for l in wt_labels}
-    dates = []
+    # count entries per calendar date, then average by weekday over days with entries
+    entries_per_date = {}
     for e in entries:
-        try: dates.append(datetime.fromisoformat(e["datum"]))
+        try:
+            d = datetime.fromisoformat(e["datum"]).date()
+            entries_per_date[d] = entries_per_date.get(d, 0) + 1
         except: pass
-    if dates:
-        from datetime import timedelta, date as date_
-        min_d, max_d = min(dates).date(), max(dates).date()
-        wt_total = [0]*7
-        cur = min_d
-        while cur <= max_d:
-            wt_total[cur.weekday()] += 1
-            cur += timedelta(days=1)
-        wt_counts = [0]*7
-        for dt in dates:
-            wt_counts[dt.weekday()] += 1
-        for i, label in enumerate(wt_labels):
-            wochentag_dist[label] = round(wt_counts[i]/wt_total[i], 1) if wt_total[i] else 0
+    wt_day_counts = [[] for _ in range(7)]
+    for d, cnt in entries_per_date.items():
+        wt_day_counts[d.weekday()].append(cnt)
+    for i, label in enumerate(wt_labels):
+        days = wt_day_counts[i]
+        wochentag_dist[label] = round(sum(days)/len(days), 1) if days else 0
     # begleitperson: flatten and count
     begl_counts = count_field("begleitperson", 8)
     return {
