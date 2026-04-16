@@ -711,7 +711,7 @@ function cardHtml(e){
   const dateStr=d?`${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`:'—';
   const ca=e.created_at?new Date(e.created_at):null;
   const createdStr=ca?`Hinzugefügt ${p(ca.getDate())}.${p(ca.getMonth()+1)}. ${p(ca.getHours())}:${p(ca.getMinutes())}`:'';
-  const showCreated=ca&&d&&Math.abs(ca-d)>120000;
+  const showCreated=ca&&d&&ca.toDateString()!==d.toDateString();
   const ageStr=e.alter_ges>0?(e.alter_j>0?`${e.alter_j} J. ${e.alter_m} M.`:`${e.alter_m} Mo.`):(e.alter_d>0?`${e.alter_d} Tage`:'—');
   const akut=(e.diagnose_akut||[]).join(', ');
   const dauer=(e.diagnose_dauer||[]).join(', ');
@@ -861,7 +861,7 @@ async function loadAnalyse(){
       </div>
       <div class="section-hdr">Übersicht</div>
       <div class="chart-card"><div class="chart-title">Altersverteilung</div><div style="position:relative;height:200px"><canvas id="ca"></canvas></div></div>
-      <div class="chart-card"><div class="chart-title">Wochentag-Verteilung</div><div style="position:relative;height:180px"><canvas id="cwt"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Ø Konsultationen pro Wochentag</div><div style="position:relative;height:180px"><canvas id="cwt"></canvas></div></div>
       <div class="chart-card"><div class="chart-title">Dauer-Verteilung</div><div style="position:relative;height:180px"><canvas id="cd"></canvas></div></div>
       <div class="section-hdr">Gründe & Maßnahmen</div>
       <div class="chart-card"><div class="chart-title">Häufigste Gründe</div><div style="position:relative;height:${Math.max(180,nGrund*34+40)}px"><canvas id="cg"></canvas></div></div>
