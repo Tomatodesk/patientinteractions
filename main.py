@@ -89,7 +89,7 @@ def root():
 
 @app.get("/api/konsultationen")
 def list_konsultationen(q: str = "", sort: str = "datum_desc", von: str = "", bis: str = ""):
-    order = "datum ASC" if sort == "datum_asc" else "datum DESC"
+    order = {"datum_asc":"datum ASC","created_desc":"created_at DESC","created_asc":"created_at ASC"}.get(sort,"datum DESC")
     conditions, params = [], []
     if q:
         like = f"%{q}%"

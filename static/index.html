@@ -636,7 +636,6 @@ function resetForm(){
   document.querySelectorAll('#begl-tags .tag').forEach(t=>t.classList.remove('on'));
   document.getElementById('mig-toggle').classList.remove('on');
   document.getElementById('mig-label').textContent='Nein';
-  document.getElementById('f-age-display').textContent='—';
   ctxVorschlaege=null;
   Object.values(mainPickers).forEach(p=>p.reset());
   initDatetime();
@@ -695,10 +694,13 @@ async function loadTable(){
   }catch{c.innerHTML='<div class="empty-state">Fehler beim Laden.</div>';}
 }
 
+const SORT_CYCLE=['datum_desc','datum_asc','created_desc'];
+const SORT_LABELS={'datum_desc':'↓ Datum','datum_asc':'↑ Datum','created_desc':'↓ Erstellt'};
 function toggleSort(){
-  currentSort=currentSort==='datum_desc'?'datum_asc':'datum_desc';
+  const idx=SORT_CYCLE.indexOf(currentSort);
+  currentSort=SORT_CYCLE[(idx+1)%SORT_CYCLE.length];
   const btn=document.getElementById('sort-btn');
-  if(btn) btn.textContent=currentSort==='datum_desc'?'↓ Neu':'↑ Alt';
+  if(btn) btn.textContent=SORT_LABELS[currentSort];
   loadTable();
 }
 
@@ -707,6 +709,9 @@ function toggleSort(){
 function cardHtml(e){
   const d=e.datum?new Date(e.datum):null,p=n=>String(n).padStart(2,'0');
   const dateStr=d?`${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`:'—';
+  const ca=e.created_at?new Date(e.created_at):null;
+  const createdStr=ca?`Hinzugefügt ${p(ca.getDate())}.${p(ca.getMonth()+1)}. ${p(ca.getHours())}:${p(ca.getMinutes())}`:'';
+  const showCreated=ca&&d&&Math.abs(ca-d)>120000;
   const ageStr=e.alter_ges>0?(e.alter_j>0?`${e.alter_j} J. ${e.alter_m} M.`:`${e.alter_m} Mo.`):(e.alter_d>0?`${e.alter_d} Tage`:'—');
   const akut=(e.diagnose_akut||[]).join(', ');
   const dauer=(e.diagnose_dauer||[]).join(', ');
@@ -716,7 +721,7 @@ function cardHtml(e){
   const ebm=(e.ebm_ziffern||[]).join(', ');
   // Use id-based lookup instead of inline JSON to avoid quoting issues
   return `<div class="entry-card">
-    <div class="ec-date">${dateStr}</div>
+    <div class="ec-date">${dateStr}${showCreated?` <span style="color:var(--ink3);font-size:10px">· ${createdStr}</span>`:''}</div>
     <div class="ec-age">${ageStr}</div>
     <div class="ec-grund">${(e.grund||[]).join(', ')||'—'}</div>
     ${akut?`<div style="font-size:13px;margin-bottom:6px"><span class="badge b-r">Akut</span> <span style="color:var(--ink2)">${akut}</span></div>`:''}
