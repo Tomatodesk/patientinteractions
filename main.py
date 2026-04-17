@@ -265,6 +265,29 @@ def get_vorschlaege():
         "ebm_ziffern":     {"top":srt(ec)[:10],  "alle":srt(ec)},
     }
 
+@app.get("/api/vorschlaege/grund-kontext")
+def get_vorschlaege_grund_kontext(alter_ges: int = 0):
+    if not alter_ges:
+        return {"grund": {"top": [], "alle": []}}
+    age_rng = _age_range(alter_ges)
+    if not age_rng:
+        return {"grund": {"top": [], "alle": []}}
+    with get_db() as db:
+        rows = db.execute("SELECT grund, alter_ges FROM konsultationen").fetchall()
+    def _count(rows_subset):
+        gc = {}
+        for row in rows_subset:
+            for item in _loads(row[0]):
+                item = item.strip()
+                if item: gc[item] = gc.get(item, 0) + 1
+        return gc
+    age_rows = [r for r in rows if age_rng[0] <= (r[1] or 0) <= age_rng[1]]
+    gc = _count(age_rows)
+    if len(gc) < 5:
+        gc = _count(rows)
+    srt = lambda d: [k for k, _ in sorted(d.items(), key=lambda x: -x[1])]
+    return {"grund": {"top": srt(gc)[:10], "alle": srt(gc)}}
+
 @app.get("/api/vorschlaege/kontext")
 def get_vorschlaege_kontext(grund: str = "", alter_ges: int = 0):
     if not grund:
