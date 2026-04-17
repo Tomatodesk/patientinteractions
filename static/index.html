@@ -260,6 +260,12 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
           <div class="toggle" id="mig-toggle" onclick="this.classList.toggle('on');document.getElementById('mig-label').textContent=this.classList.contains('on')?'Ja':'Nein'"></div>
           <span id="mig-label">Nein</span>
         </div>
+        <div style="border-top:1px solid var(--border);margin:12px 0"></div>
+        <div class="card-title">Folgekonsultation <span style="font-weight:400;color:var(--ink3)">(letzte 3 Mo.)</span></div>
+        <div class="toggle-row">
+          <div class="toggle" id="f-folge-toggle" onclick="this.classList.toggle('on');document.getElementById('f-folge-label').textContent=this.classList.contains('on')?'Ja':'Nein';onEbmContextChange('picker-grund')"></div>
+          <span id="f-folge-label">Nein</span>
+        </div>
       </div>
       <div class="card">
         <div class="coll-hdr" onclick="toggleColl(this)">
@@ -390,6 +396,12 @@ html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-heig
           <div class="toggle" id="e-mig-toggle" onclick="this.classList.toggle('on');document.getElementById('e-mig-label').textContent=this.classList.contains('on')?'Ja':'Nein'"></div>
           <span id="e-mig-label">Nein</span>
         </div>
+        <div style="border-top:1px solid var(--border);margin:12px 0"></div>
+        <div class="card-title" style="margin-bottom:10px">Folgekonsultation <span style="font-weight:400;color:var(--ink3)">(letzte 3 Mo.)</span></div>
+        <div class="toggle-row">
+          <div class="toggle" id="e-folge-toggle" onclick="this.classList.toggle('on');document.getElementById('e-folge-label').textContent=this.classList.contains('on')?'Ja':'Nein';onEbmContextChange('e-picker-grund')"></div>
+          <span id="e-folge-label">Nein</span>
+        </div>
       </div>
       <div style="margin-bottom:14px">
         <div class="card-title" style="margin-bottom:10px">Notizen</div>
@@ -475,7 +487,12 @@ class TagPicker {
   _renderTop() {
     if(!this._top) return;
     const cc=this.chipClass;
-    this._top.innerHTML=this._data.top.map(v=>
+    const ctx=ctxVorschlaege&&ctxVorschlaege[this.type];
+    const ctxTop=(ctx&&ctx.top)?ctx.top:[];
+    const globalTop=(vorschlaege[this.type]?.top)||(DEFAULTS[this.type]||[]).slice(0,10);
+    const seen=new Set(ctxTop);
+    const combined=[...ctxTop,...globalTop.filter(v=>!seen.has(v))].slice(0,10);
+    this._top.innerHTML=combined.map(v=>
       `<span class="tp-tag${this.selected.has(v)?' on':''}${cc?' '+cc:''}" data-pid="${this.pid}" data-v="${encodeURIComponent(v)}" onclick="tpToggle(this)">${v}</span>`
     ).join('');
   }
@@ -488,7 +505,11 @@ class TagPicker {
   _onInput() {
     const q=this._inp.value.trim(); this._add.disabled=!q;
     if(!q){this._closeDD();return;}
-    const all=this._data.alle.length?this._data.alle:(DEFAULTS[this.type]||[]);
+    const ctx=ctxVorschlaege&&ctxVorschlaege[this.type];
+    const ctxAll=(ctx&&ctx.alle)?ctx.alle:[];
+    const globalAll=(vorschlaege[this.type]?.alle)||(DEFAULTS[this.type]||[]);
+    const ctxSet=new Set(ctxAll);
+    const all=[...ctxAll,...globalAll.filter(v=>!ctxSet.has(v))];
     const esc=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
     const matches=all.filter(v=>v.toLowerCase().includes(q.toLowerCase())&&!this.selected.has(v)).slice(0,8);
     if(!matches.length){this._closeDD();return;}
@@ -544,6 +565,13 @@ function onEbmContextChange(pid) {
     if(dav.length) params.set('diagnose_akut',dav.join(','));
     if(ddv.length) params.set('diagnose_dauer',ddv.join(','));
     if(mv.length) params.set('massnahmen',mv.join(','));
+    const pfx=isMain?'f':'e';
+    const j=parseInt(document.getElementById(`${pfx}-alter-j`)?.value)||0;
+    const m=parseInt(document.getElementById(`${pfx}-alter-m`)?.value)||0;
+    const alterGes=j*12+m;
+    if(alterGes>0) params.set('alter_ges',alterGes);
+    const folgeEl=document.getElementById(`${pfx}-folge-toggle`);
+    if(folgeEl) params.set('folgekonsultation',folgeEl.classList.contains('on')?1:0);
     try{
       const r=await fetch(`${API}/api/vorschlaege/ebm-kontext?${params}`);
       const data=await r.json();
@@ -568,7 +596,13 @@ function onGrundChange(pid) {
   }
   ctxTimer=setTimeout(async()=>{
     try{
-      const r=await fetch(`${API}/api/vorschlaege/kontext?grund=${encodeURIComponent(values.join(','))}`);
+      const pfx=isMain?'f':'e';
+      const j=parseInt(document.getElementById(`${pfx}-alter-j`)?.value)||0;
+      const m=parseInt(document.getElementById(`${pfx}-alter-m`)?.value)||0;
+      const alterGes=j*12+m;
+      const params=new URLSearchParams({grund:values.join(',')});
+      if(alterGes>0) params.set('alter_ges',alterGes);
+      const r=await fetch(`${API}/api/vorschlaege/kontext?${params}`);
       ctxVorschlaege=await r.json();
     }catch{ctxVorschlaege=null;}
     [pickers.diagAkut,pickers.diagDauer,pickers.mass].forEach(pk=>{if(pk)pk._renderTop();});
@@ -636,6 +670,8 @@ function resetForm(){
   document.querySelectorAll('#begl-tags .tag').forEach(t=>t.classList.remove('on'));
   document.getElementById('mig-toggle').classList.remove('on');
   document.getElementById('mig-label').textContent='Nein';
+  document.getElementById('f-folge-toggle').classList.remove('on');
+  document.getElementById('f-folge-label').textContent='Nein';
   ctxVorschlaege=null;
   Object.values(mainPickers).forEach(p=>p.reset());
   initDatetime();
@@ -661,6 +697,7 @@ document.getElementById('entry-form').addEventListener('submit', async function(
     ebm_ziffern:    mainPickers.ebm.getValues(),
     begleitperson:  getMultiActive('begl-tags'),
     mh:document.getElementById('mig-toggle').classList.contains('on'),
+    folgekonsultation:document.getElementById('f-folge-toggle').classList.contains('on')?1:0,
     notizen:document.getElementById('f-notizen').value.trim()
   };
   const btn=document.getElementById('submit-btn');
@@ -768,6 +805,9 @@ function openEdit(id){
   const mt=document.getElementById('e-mig-toggle');
   e.mh?mt.classList.add('on'):mt.classList.remove('on');
   document.getElementById('e-mig-label').textContent=e.mh?'Ja':'Nein';
+  const ft=document.getElementById('e-folge-toggle');
+  e.folgekonsultation?ft.classList.add('on'):ft.classList.remove('on');
+  document.getElementById('e-folge-label').textContent=e.folgekonsultation?'Ja':'Nein';
   document.getElementById('e-notizen').value=e.notizen||'';
   // init edit pickers once
   if(!editPickers.grund){
@@ -823,6 +863,7 @@ async function saveEdit(){
     ebm_ziffern:    editPickers.ebm.getValues(),
     begleitperson:  getMultiActive('e-begl-tags'),
     mh:document.getElementById('e-mig-toggle').classList.contains('on'),
+    folgekonsultation:document.getElementById('e-folge-toggle').classList.contains('on')?1:0,
     notizen:document.getElementById('e-notizen').value.trim()
   };
   try{
